@@ -3,24 +3,11 @@ from abc import abstractmethod
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
-    def readFeatureVectors(self):
+    def readFeatureVectors(self, inputPath):
         pass
 
 class CorpusReader(Reader):
-    def __init__(self):
-        self.__inputPath = ''
-
-    # inputPath getter method
-    @property
-    def inputPath(self):
-        return self.__inputPath
-
-    # inputPath setter method
-    @inputPath.setter
-    def inputPath(self, path):
-        self.__inputPath = path
-
-    def readFeatureVectors(self):
+    def readFeatureVectors(self, inputPath):
         pass
 
 class Projector:
@@ -37,12 +24,12 @@ class Projector:
     def somModel(self, model):
         self.__somModel = model
 
-    def saveSomModel():
+    def saveSomModel(self, outputPath):
         pass
 
-    def fit(featureVectors):
+    def fit(self, featureVectors):
         pass
 
-    def getProjection(featureVector):
+    def getProjection(self, featureVectors):
         pass
     
