@@ -14,12 +14,10 @@ class Projector:
     def __init__(self):
         self.__somModel = None
     
-    # somModel getter method
     @property
     def somModel(self):
         return self.__somModel
 
-    # somModel setter method
     @somModel.setter
     def somModel(self, model):
         self.__somModel = model
@@ -32,4 +30,3 @@ class Projector:
 
     def getProjection(self, featureVectors):
         pass
-    
