@@ -1,163 +1,10 @@
 from abc import ABCMeta
 from abc import abstractmethod
+from threading import Thread
 
-class Preprocessor(metaclass=ABCMeta):
-    @abstractmethod
-    def preProcess(self, documents):
-        pass
-
-class LexicPreprocessor(Preprocessor):
-    def __init__(self):
-        self.__threadId = -1
-
-    # threadId getter method
-    @property
-    def threadId(self):
-        return self.__threadId
-
-    # threadId setter method
-    @threadId.setter
-    def threadId(self, id):
-        self.__threadId = id
-
-    def preProcess(self,documents):
-        pass
-
-class SemanticPreprocessor(Preprocessor):
-    def __init__(self):
-        self.__threadId = -1
-
-    # threadId getter method
-    @property
-    def threadId(self):
-        return self.__threadId
-
-    # threadId setter method
-    @threadId.setter
-    def threadId(self, id):
-        self.__threadId = id
-
-    def preProcess(self,documents):
-        pass
-
-class SyntacticPreprocessor(Preprocessor):
-    def __init__(self):
-        self.__threadId = -1
-
-    # threadId getter method
-    @property
-    def threadId(self):
-        return self.__threadId
-
-    # threadId setter method
-    @threadId.setter
-    def threadId(self, id):
-        self.__threadId = id
-
-    def preProcess(self,documents):
-        pass
-
-class PreprocessorAbstractFactory(metaclass=ABCMeta):
-    def createLexicPreprocessor(threadId):
-        pass
-    
-    def createSyntacticPreprocessor(threadId):
-        pass
-
-    def createSemanticPreprocessor(threadId):
-        pass
-
-class PreprocessorFactory(PreprocessorAbstractFactory):
-    def __init__(self):
-        super().__init__()
-
-    def createLexicPreprocessor(threadId):
-        pass
-    
-    def createSyntacticPreprocessor(threadId):
-        pass
-
-    def createSemanticPreprocessor(threadId):
-        pass
-
-class Dispatcher(metaclass=ABCMeta):
-    @abstractmethod
-    def getBatch(self):
-        pass
-
-class CorpusReader(Dispatcher):
-    def __init__(self):
-        self.__inputPath = ''
-        self.__batchSize = 0
-    
-    # inputPath getter method
-    @property
-    def inputPath(self):
-        return self.__inputPath
-
-    # inputPath setter method
-    @inputPath.setter
-    def inputPath(self, path):
-        self.__inputPath = path
-
-    # batchSize getter method
-    @property
-    def batchSize(self):
-        return self.__batchSize
-
-    # batchSize setter method
-    @batchSize.setter
-    def batchSize(self, size):
-        self.__batchSize = size
-
-    # get Batch method
-    def getBatch(self):
-        pass
-
-class Sink(metaclass=ABCMeta):
-    @abstractmethod
-    def addPreprocessedBatch(self, batchId, documents):
-        pass
-    
-    @abstractmethod
-    def sortBatches(self):
-        pass
-
-    @abstractmethod
-    def saveCorpus(self):
-        pass
-
-class DocumentSink(Sink):
-    def __init__(self):
-        self.__corpus = None
-    
-    # corpus getter method
-    @property
-    def corpus(self):
-        return self.__corpus
-
-    # corpus setter method
-    @corpus.setter
-    def corpus(self, corpus):
-        self.__corpus = corpus
-
-    def addPreprocessedBatch(batchId, documents):
-        pass
-
-    def saveCorpus(self):
-        pass
-
-    def sortBatches(self):
-        pass
-
-class Thread(metaclass=ABCMeta):
-    @abstractmethod
-    def run(self):
-        pass
-
-class Document:
-    def __init__(self):
-        self.__text = ''
+class Document:     
+    def __init__(self, text=None):
+        self.__text = text
     
     # text getter method
     @property
@@ -166,5 +13,109 @@ class Document:
 
     # text setter method
     @text.setter
-    def text(self, val):
-        self.__text = val
+    def text(self, text):
+        self.__text = text
+
+class Dispatcher(metaclass=ABCMeta):
+    @abstractmethod
+    def readCorpus(self):
+        pass
+
+    @abstractmethod
+    def getBatch(self):
+        pass
+
+class CorpusReader(Dispatcher):
+    def __init__(self, inputPath=None, batchSize=32):
+        self.__inputPath = inputPath
+        self.__batchSize = batchSize
+        self.__corpus = self.__readCorpus()
+
+    def __readCorpus(self):
+        pass
+
+    def getBatch(self):
+        pass
+
+class Preprocessor(metaclass=ABCMeta):
+    @abstractmethod
+    def __preProcess(self, batchId, documents):
+        pass
+
+class LexicPreprocessor(Preprocessor, Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def __preProcess(self, batchId, documents):
+        pass
+
+    def run(self):
+        pass
+
+class SyntacticPreprocessor(Preprocessor):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def __preProcess(self, batchId, documents):
+        pass
+
+    def run(self):
+        pass
+
+class SemanticPreprocessor(Preprocessor, Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def __preProcess(self, batchId, documents):
+        pass
+
+    def run(self):
+        pass
+
+class PreprocessorAbstractFactory(metaclass=ABCMeta):
+    @abstractmethod
+    def createLexicPreprocessor(self):
+        pass
+
+    @abstractmethod
+    def createSyntacticPreprocessor(self):
+        pass
+    
+    @abstractmethod
+    def createSemanticPreprocessor(self):
+        pass
+
+class PreprocessorFactory(PreprocessorAbstractFactory):
+    def createLexicPreprocessor(self):
+        pass
+    
+    def createSyntacticPreprocessor(self):
+        pass
+
+    def createSemanticPreprocessor(self):
+        pass
+
+class Sink(metaclass=ABCMeta):
+    @abstractmethod
+    def addPreprocessedBatch(self, batchId, documents):
+        pass
+    
+    @abstractmethod
+    def __sortBatches(self):
+        pass
+
+    @abstractmethod
+    def saveCorpus(self, outputPath):
+        pass
+
+class DocumentSink(Sink):
+    __corpus = None
+    
+    def addPreprocessedBatch(self, batchId, documents):
+        pass
+    
+    def __sortBatches(self):
+        pass
+
+    def saveCorpus(self, outputPath):
+        pass
