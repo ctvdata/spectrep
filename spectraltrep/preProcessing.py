@@ -1,6 +1,18 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from threading import Thread
+import os
+import pandas as pd
+import nltk
+from spectraltrep.featureExtraction import Writer
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize  
+import re
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 
 class Document:     
     def __init__(self, text=None):
@@ -39,24 +51,74 @@ class CorpusReader(Dispatcher):
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
-    def __preProcess(self, batchId, documents):
+    def __preProcess(self, text):
         pass
 
 class LexicPreprocessor(Preprocessor, Thread):
-    def __init__(self):
-        Thread.__init__(self)
+    def __init__(self, dispatcher, sink):
+        try:
+            if isinstance(dispatcher, Dispatcher):
+                self.__dispatcher = dispatcher
+            else:
+                raise Exception("Non-valid instance of dispatcher.")
 
-    def __preProcess(self, batchId, documents):
-        pass
+            if isinstance(sink, Sink):
+                self.__sink = sink
+            else:
+                raise Exception("Non-valid instance of Sink.")
+        
+        except Exception as err:
+            print(err)
+
+        Thread.__init__(self)        
+        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
+        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
+        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
+        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
+        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
+        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
+        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
+        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        self.__stop_words = set(stopwords.words('english'))
+    
+    def __preProcess(self, text):
+        text = text.lower()
+        text = self.__DELETE_NEW_LINE.sub("", text)
+        text = self.__DELETE_MIDSCORE.sub(" ", text)
+        text = self.__DELETE_PARENTHESES.sub("", text)    
+        text = self.__DELETE_BRACKETS.sub("", text)    
+        text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
+        text = self.__DELETE_QM.sub("", text)
+        text = self.__DELETE_PUNCTUATION.sub('', text)
+        text = self.__REPLACE_DIGITS.sub('<NUM>', text)
+        
+        word_tokens = word_tokenize(text)
+        text = [w for w in word_tokens if not w in self.__stop_words]
+        
+        wordnet_lemmatizer = WordNetLemmatizer()    
+        text = [wordnet_lemmatizer.lemmatize(w) for w in text]
+        
+        text = ' '.join(text)    
+        
+        return(text)
 
     def run(self):
-        pass
+        while(True):
+            batch = self.__dispatcher.getBatch()
+            if(batch != '<EOC>'):
+                batchId = batch[0]
+                documents = batch[1]
+                documents = [self.__preProcess(t) for t in documents]
+
+                self.__sink.addPreprocessedBatch(self, (batchId, documents))
+            else:
+                break
 
 class SyntacticPreprocessor(Preprocessor):
     def __init__(self):
         Thread.__init__(self)
 
-    def __preProcess(self, batchId, documents):
+    def __preProcess(self, text):
         pass
 
     def run(self):
@@ -66,7 +128,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
     def __init__(self):
         Thread.__init__(self)
 
-    def __preProcess(self, batchId, documents):
+    def __preProcess(self, text):
         pass
 
     def run(self):
@@ -97,7 +159,7 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
 
 class Sink(metaclass=ABCMeta):
     @abstractmethod
-    def addPreprocessedBatch(self, batchId, documents):
+    def addPreprocessedBatch(self, batch):
         pass
     
     @abstractmethod
@@ -111,7 +173,7 @@ class Sink(metaclass=ABCMeta):
 class DocumentSink(Sink):
     __corpus = None
     
-    def addPreprocessedBatch(self, batchId, documents):
+    def addPreprocessedBatch(self, batch):
         pass
     
     def __sortBatches(self):
