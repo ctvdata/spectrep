@@ -99,7 +99,7 @@ class LexicPreprocessor(Preprocessor, Thread):
         
         text = ' '.join(text)    
         
-        return(text)
+        return text
 
     def run(self):
         while(True):
@@ -151,7 +151,7 @@ class SyntacticPreprocessor(Preprocessor):
         text = nltk.pos_tag(text)
         text = ' '.join(text)    
         
-        return(text)
+        return text
 
     def run(self):
         while(True):
@@ -200,7 +200,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
         text = self.__DELETE_PUNCTUATION.sub('', text)
         text = self.__REPLACE_DIGITS.sub('<NUM>', text)
         
-        return(text)
+        return text
 
     def run(self):
         while(True):
@@ -214,26 +214,26 @@ class SemanticPreprocessor(Preprocessor, Thread):
 
 class PreprocessorAbstractFactory(metaclass=ABCMeta):
     @abstractmethod
-    def createLexicPreprocessor(self):
+    def createLexicPreprocessor(self, dispatcher, sink):
         pass
 
     @abstractmethod
-    def createSyntacticPreprocessor(self):
+    def createSyntacticPreprocessor(self, dispatcher, sink):
         pass
     
     @abstractmethod
-    def createSemanticPreprocessor(self):
+    def createSemanticPreprocessor(self, dispatcher, sink):
         pass
 
 class PreprocessorFactory(PreprocessorAbstractFactory):
-    def createLexicPreprocessor(self):
-        pass
+    def createLexicPreprocessor(self, dispatcher, sink):
+        return LexicPreprocessor(dispatcher, sink)
     
-    def createSyntacticPreprocessor(self):
-        pass
+    def createSyntacticPreprocessor(self, dispatcher, sink):
+        return SyntacticPreprocessor(dispatcher, sink)
 
-    def createSemanticPreprocessor(self):
-        pass
+    def createSemanticPreprocessor(self, dispatcher, sink):
+        return SemanticPreprocessor(dispatcher, sink)
 
 class Sink(metaclass=ABCMeta):
     @abstractmethod
