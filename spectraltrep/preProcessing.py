@@ -4,7 +4,8 @@ from threading import Thread
 import os
 import pandas as pd
 import nltk
-from spectraltrep.featureExtraction import Writer
+import json
+from featureExtraction import Writer
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -14,25 +15,7 @@ import re
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 
-class Document:     
-    def __init__(self, text=None):
-        self.__text = text
-    
-    # text getter method
-    @property
-    def text(self):
-        return self.__text
-
-    # text setter method
-    @text.setter
-    def text(self, text):
-        self.__text = text
-
 class Dispatcher(metaclass=ABCMeta):
-    @abstractmethod
-    def readCorpus(self):
-        pass
-
     @abstractmethod
     def getBatch(self):
         pass
@@ -41,13 +24,54 @@ class CorpusReader(Dispatcher):
     def __init__(self, inputPath=None, batchSize=32):
         self.__inputPath = inputPath
         self.__batchSize = batchSize
-        self.__corpus = self.__readCorpus()
-
-    def __readCorpus(self):
-        pass
+        self.__idBatch = 0
+        self.__number_of_lines = self.count_lines()
 
     def getBatch(self):
-        pass
+        # Si el número lineas procesadas es mayor o igual
+        #  al número de líneas totales, solo mandamos el token.
+        processed_lines = self.__idBatch * self.__batchSize #512
+        if processed_lines >= self.__number_of_lines:
+            return '<EOC>'
+
+        # Aumentamos el id del batch.
+        self.__idBatch += 1
+
+        # Variable auxiliar que indica en que línea vamos.
+        current_line = 1
+
+        with open(self.__inputPath) as infile:
+            # Variables auxiliares para el mínimo y máximo rango del batchSize.
+            min_range = self.__batchSize * (self.__idBatch - 1)
+            max_range = self.__batchSize * self.__idBatch
+
+            # Lista de diccionarios que representará el batch de documentos.
+            batch = []
+
+            for line in infile:
+                # Revisamos si estamos dentro del rango del batchSize.
+                if current_line > min_range and current_line < max_range:
+                    batch.append(json.loads(line))
+                elif current_line == max_range:
+                    batch.append(json.loads(line))
+                    break
+                
+                current_line += 1
+            
+            # Regresamos el batch actual junto con su id.
+            return self.__idBatch, batch
+    
+    # Método auxiliar para contar el número de líneas del archivo
+    # Esto ayudará a que una vez que se termine de leer el archivo, no se
+    # vuelva a leer el archivo.
+    def count_lines(self):
+        lines = 0
+
+        with open(self.__inputPath) as infile:
+            for line in infile:
+                lines += 1
+
+        return lines
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
