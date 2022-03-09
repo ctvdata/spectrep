@@ -22,38 +22,38 @@ class CorpusReader(Dispatcher):
         self.__inputPath = inputPath
         self.__batchSize = batchSize
         self.__idBatch = 0
-        self.__number_of_lines = self.count_lines()
+        self.__numberOfLines = self.__countLines()
 
     def getBatch(self):
         # Si el número lineas procesadas es mayor o igual
         #  al número de líneas totales, solo mandamos el token.
-        processed_lines = self.__idBatch * self.__batchSize #512
-        if processed_lines >= self.__number_of_lines:
+        processedLines = self.__idBatch * self.__batchSize #512
+        if processedLines >= self.__numberOfLines:
             return '<EOC>'
 
         # Aumentamos el id del batch.
         self.__idBatch += 1
 
         # Variable auxiliar que indica en que línea vamos.
-        current_line = 1
+        currentLine = 1
 
         with open(self.__inputPath) as infile:
             # Variables auxiliares para el mínimo y máximo rango del batchSize.
-            min_range = self.__batchSize * (self.__idBatch - 1)
-            max_range = self.__batchSize * self.__idBatch
+            minRange = self.__batchSize * (self.__idBatch - 1)
+            maxRange = self.__batchSize * self.__idBatch
 
             # Lista de diccionarios que representará el batch de documentos.
             batch = []
 
             for line in infile:
                 # Revisamos si estamos dentro del rango del batchSize.
-                if current_line > min_range and current_line < max_range:
+                if currentLine > minRange and currentLine < maxRange:
                     batch.append(json.loads(line))
-                elif current_line == max_range:
+                elif currentLine == maxRange:
                     batch.append(json.loads(line))
                     break
                 
-                current_line += 1
+                currentLine += 1
             
             # Regresamos el batch actual junto con su id.
             return self.__idBatch, batch
@@ -61,11 +61,11 @@ class CorpusReader(Dispatcher):
     # Método auxiliar para contar el número de líneas del archivo
     # Esto ayudará a que una vez que se termine de leer el archivo, no se
     # vuelva a leer el archivo.
-    def count_lines(self):
+    def __countLines(self):
         lines = 0
 
         with open(self.__inputPath) as infile:
-            for line in infile:
+            for _ in infile:
                 lines += 1
 
         return lines
