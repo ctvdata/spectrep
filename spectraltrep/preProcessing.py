@@ -4,7 +4,7 @@ from threading import Thread
 import os
 import pandas as pd
 import nltk
-from spectraltrep.featureExtraction import Writer
+#from spectraltrep.featureExtraction import Writer
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -241,7 +241,7 @@ class Sink(metaclass=ABCMeta):
         pass
     
     @abstractmethod
-    def __sortBatches(self):
+    def _sortBatches(self):
         pass
 
     @abstractmethod
@@ -249,13 +249,18 @@ class Sink(metaclass=ABCMeta):
         pass
 
 class DocumentSink(Sink):
-    __corpus = None
+    __corpus = {}
     
     def addPreprocessedBatch(self, batch):
-        pass
+        self.__corpus[batch['batchId']] = batch['content']
     
-    def __sortBatches(self):
-        pass
+    def _sortBatches(self):
+        self.__corpus = {k: v for k, v in sorted(self.__corpus.items())}
 
     def saveCorpus(self, outputPath):
-        pass
+        self._sortBatches() 
+
+        with open(outputPath,"w") as f:
+            for batch in self.__corpus.values():
+                for  text in batch:
+                    f.write("id: {0}, text: {1} \n".format(text['id'], text['text']))
