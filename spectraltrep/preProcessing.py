@@ -1,11 +1,8 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from threading import Thread
-import os
-import pandas as pd
 import nltk
 import json
-from featureExtraction import Writer
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
