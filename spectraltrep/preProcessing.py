@@ -260,10 +260,6 @@ class Sink(metaclass=ABCMeta):
     @abstractmethod
     def addPreprocessedBatch(self, batch):
         pass
-    
-    @abstractmethod
-    def _sortBatches(self):
-        pass
 
     @abstractmethod
     def saveCorpus(self, outputPath):
