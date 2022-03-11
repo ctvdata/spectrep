@@ -1,16 +1,19 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from threading import Thread
-import nltk
 import json
+import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('omw-1.4')
+from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize  
 import re
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet
+wordnet.ensure_loaded()
+import pdb
 
 class Dispatcher(metaclass=ABCMeta):
     @abstractmethod
@@ -72,11 +75,12 @@ class CorpusReader(Dispatcher):
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
-    def __preProcess(self, text):
+    def preProcess(self, text):
         pass
 
 class LexicPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
+        Thread.__init__(self)
         try:
             if isinstance(dispatcher, Dispatcher):
                 self.__dispatcher = dispatcher
@@ -90,8 +94,7 @@ class LexicPreprocessor(Preprocessor, Thread):
         
         except Exception as err:
             print(err)
-
-        Thread.__init__(self)        
+       
         self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
         self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
         self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
@@ -103,7 +106,7 @@ class LexicPreprocessor(Preprocessor, Thread):
         self.__stop_words = set(stopwords.words('english'))
         self.__wordnet_lemmatizer = WordNetLemmatizer()
     
-    def __preProcess(self, text):
+    def preProcess(self, text):
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -126,14 +129,19 @@ class LexicPreprocessor(Preprocessor, Thread):
         while(True):
             batch = self.__dispatcher.getBatch()
             if(batch != '<EOC>'):
-                documents = [self.__preProcess(t) for t in batch[1]]
+                
+                documents = []
 
-                self.__sink.addPreprocessedBatch(self, (batch[0], documents))
+                for t in batch[1]:
+                    t['text'] = self.preProcess(t['text'])
+                    documents.append(t)
+                self.__sink.addPreprocessedBatch((batch[0], documents))
             else:
                 break
 
 class SyntacticPreprocessor(Preprocessor):
     def __init__(self, dispatcher, sink):
+        Thread.__init__(self)
         try:
             if isinstance(dispatcher, Dispatcher):
                 self.__dispatcher = dispatcher
@@ -148,7 +156,6 @@ class SyntacticPreprocessor(Preprocessor):
         except Exception as err:
             print(err)
 
-        Thread.__init__(self)        
         self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
         self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
         self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
@@ -158,7 +165,7 @@ class SyntacticPreprocessor(Preprocessor):
         self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
         self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
     
-    def __preProcess(self, text):
+    def preProcess(self, text):
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -178,14 +185,14 @@ class SyntacticPreprocessor(Preprocessor):
         while(True):
             batch = self.__dispatcher.getBatch()
             if(batch != '<EOC>'):
-                documents = [self.__preProcess(t) for t in batch[1]]
-
-                self.__sink.addPreprocessedBatch(self, (batch[0], documents))
+                documents = [self.preProcess(t) for t in batch[1]]
+                self.__sink.addPreprocessedBatch((batch[0], documents))
             else:
                 break
 
 class SemanticPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
+        Thread.__init__(self)
         try:
             if isinstance(dispatcher, Dispatcher):
                 self.__dispatcher = dispatcher
@@ -199,8 +206,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
         
         except Exception as err:
             print(err)
-
-        Thread.__init__(self)        
+            
         self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
         self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
         self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
@@ -210,7 +216,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
         self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
         self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
     
-    def __preProcess(self, text):
+    def preProcess(self, text):
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -227,9 +233,9 @@ class SemanticPreprocessor(Preprocessor, Thread):
         while(True):
             batch = self.__dispatcher.getBatch()
             if(batch != '<EOC>'):
-                documents = [self.__preProcess(t) for t in batch[1]]
+                documents = [self.preProcess(t) for t in batch[1]]
 
-                self.__sink.addPreprocessedBatch(self, (batch[0], documents))
+                self.__sink.addPreprocessedBatch((batch[0], documents))
             else:
                 break
 
@@ -269,7 +275,7 @@ class DocumentSink(Sink):
     __corpus = {}
     
     def addPreprocessedBatch(self, batch):
-        self.__corpus[batch['batchId']] = batch['content']
+        self.__corpus[batch[0]] = batch[1]
     
     def __sortBatches(self):
         self.__corpus = {k: v for k, v in sorted(self.__corpus.items())}
