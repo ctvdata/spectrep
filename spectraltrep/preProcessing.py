@@ -1,12 +1,13 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from threading import Thread
+from threading import Thread, Lock
 import json
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+nltk.download('averaged_perceptron_tagger')
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize  
@@ -21,45 +22,47 @@ class Dispatcher(metaclass=ABCMeta):
         pass
 
 class CorpusReader(Dispatcher):
-    def __init__(self, inputPath=None, batchSize=32):
+    def __init__(self, inputPath=None, batchSize=3000):
         self.__inputPath = inputPath
+        self.__lock = Lock()
         self.__batchSize = batchSize
         self.__idBatch = 0
         self.__numberOfLines = self.__countLines()
 
     def getBatch(self):
-        # Si el número lineas procesadas es mayor o igual
-        #  al número de líneas totales, solo mandamos el token.
-        processedLines = self.__idBatch * self.__batchSize #512
-        if processedLines >= self.__numberOfLines:
-            return '<EOC>'
+        with self.__lock:
+            # Si el número lineas procesadas es mayor o igual
+            #  al número de líneas totales, solo mandamos el token.
+            processedLines = self.__idBatch * self.__batchSize #512
+            if processedLines >= self.__numberOfLines:
+                return '<EOC>'
 
-        # Aumentamos el id del batch.
-        self.__idBatch += 1
+            # Aumentamos el id del batch.
+            self.__idBatch += 1
 
-        # Variable auxiliar que indica en que línea vamos.
-        currentLine = 1
+            # Variable auxiliar que indica en que línea vamos.
+            currentLine = 1
 
-        with open(self.__inputPath) as infile:
-            # Variables auxiliares para el mínimo y máximo rango del batchSize.
-            minRange = self.__batchSize * (self.__idBatch - 1)
-            maxRange = self.__batchSize * self.__idBatch
+            with open(self.__inputPath) as infile:
+                # Variables auxiliares para el mínimo y máximo rango del batchSize.
+                minRange = self.__batchSize * (self.__idBatch - 1)
+                maxRange = self.__batchSize * self.__idBatch
 
-            # Lista de diccionarios que representará el batch de documentos.
-            batch = []
+                # Lista de diccionarios que representará el batch de documentos.
+                batch = []
 
-            for line in infile:
-                # Revisamos si estamos dentro del rango del batchSize.
-                if currentLine > minRange and currentLine < maxRange:
-                    batch.append(json.loads(line))
-                elif currentLine == maxRange:
-                    batch.append(json.loads(line))
-                    break
-                
-                currentLine += 1
-            
-            # Regresamos el batch actual junto con su id.
-            return self.__idBatch, batch
+                for line in infile:
+                    # Revisamos si estamos dentro del rango del batchSize.
+                    if currentLine > minRange and currentLine < maxRange:
+                        batch.append(json.loads(line))
+                    elif currentLine == maxRange:
+                        batch.append(json.loads(line))
+                        break
+                    
+                    currentLine += 1
+
+                # Regresamos el batch actual junto con su id.
+                return self.__idBatch, batch
     
     # Método auxiliar para contar el número de líneas del archivo
     # Esto ayudará a que una vez que se termine de leer el archivo, no se
@@ -139,7 +142,7 @@ class LexicPreprocessor(Preprocessor, Thread):
             else:
                 break
 
-class SyntacticPreprocessor(Preprocessor):
+class SyntacticPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
         Thread.__init__(self)
         try:
@@ -177,7 +180,7 @@ class SyntacticPreprocessor(Preprocessor):
         text = self.__REPLACE_DIGITS.sub('<NUM>', text)
         text = word_tokenize(text)
         text = nltk.pos_tag(text)
-        text = ' '.join(text)    
+        text = ' '.join([t[1] for t in text])    
         
         return text
 
@@ -185,7 +188,12 @@ class SyntacticPreprocessor(Preprocessor):
         while(True):
             batch = self.__dispatcher.getBatch()
             if(batch != '<EOC>'):
-                documents = [self.preProcess(t) for t in batch[1]]
+                
+                documents = []
+
+                for t in batch[1]:
+                    t['text'] = self.preProcess(t['text'])
+                    documents.append(t)
                 self.__sink.addPreprocessedBatch((batch[0], documents))
             else:
                 break
@@ -233,8 +241,12 @@ class SemanticPreprocessor(Preprocessor, Thread):
         while(True):
             batch = self.__dispatcher.getBatch()
             if(batch != '<EOC>'):
-                documents = [self.preProcess(t) for t in batch[1]]
+                
+                documents = []
 
+                for t in batch[1]:
+                    t['text'] = self.preProcess(t['text'])
+                    documents.append(t)
                 self.__sink.addPreprocessedBatch((batch[0], documents))
             else:
                 break
@@ -272,10 +284,15 @@ class Sink(metaclass=ABCMeta):
         pass
 
 class DocumentSink(Sink):
-    __corpus = {}
+    def __init__(self):
+        self.__lock = Lock()
+        self.__corpus = {}
+
+
     
     def addPreprocessedBatch(self, batch):
-        self.__corpus[batch[0]] = batch[1]
+        with self.__lock:
+            self.__corpus[batch[0]] = batch[1]
     
     def __sortBatches(self):
         self.__corpus = {k: v for k, v in sorted(self.__corpus.items())}
