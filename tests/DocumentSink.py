@@ -3,15 +3,23 @@ import numpy as np
 sys.path.append('..')
 from spectraltrep.preProcessing import DocumentSink
 
-sink = DocumentSink()
+sinkOrder = DocumentSink(True, "../data/SalidaDocumentSinkOrdenado.jsonl")
+sink = DocumentSink(False, "../data/SalidaDocumentSink.jsonl")
+sinkVector = DocumentSink(False, "../data/SalidaVectorWritter.jsonl")
 
 arr = np.arange(10)
 np.random.shuffle(arr)
 print(arr)
 for i in arr:
-    sink.addPreprocessedBatch({'batchId': i,
-                                'content': [{'id': 3*i + 1, 'text': 'contenido {}'.format(3*i + 1)},
-                                            {'id': 3*i + 2, 'text': 'contenido {}'.format(3*i + 2)},
-                                            {'id': 3*i + 3, 'text': 'contenido {}'.format(3*i + 3)}]})
+    batch = (i,[{'id': int(3*i + 1), 'text': 'contenido {}'.format(3*i + 1)},
+                {'id': int(3*i + 2), 'text': 'contenido {}'.format(3*i + 2)},
+                {'id': int(3*i + 3), 'text': 'contenido {}'.format(3*i + 3)}])
+    sinkOrder.addPreprocessedBatch(batch)
+    sink.addPreprocessedBatch(batch)
+    sinkVector.addPreprocessedBatch((i,[{'id': int(3*i + 1), 'vector': np.arange(10)},
+                                        {'id': int(3*i + 2), 'vector': np.arange(10)},
+                                        {'id': int(3*i + 3), 'vector': np.arange(10)}]))
     
-sink.saveCorpus("../data/SalidaDocumentSink.txt")
+sinkOrder.saveCorpus()
+sink.saveCorpus()
+sinkVector.saveCorpus()

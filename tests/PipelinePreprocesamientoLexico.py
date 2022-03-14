@@ -12,7 +12,7 @@ batchSize = 3000 # Numero de documentos que entrega CorpusReader por batch
 # Creamos la fabrica de preprocesadores, el lector de corpus y el sink que recibe los documentos preprocesados
 ppf = PreprocessorFactory()
 cr = CorpusReader('../data/data.jsonl', batchSize)
-ds = DocumentSink()
+ds = DocumentSink(True, "../data/SalidaPipelinePreProcesamientoLexico.jsonl")
 
 # Inicializamos hilos de preprocesamiento
 lexicPreprocessingThreads = []
@@ -26,5 +26,5 @@ for t in lexicPreprocessingThreads:
     t.join()
 
 # Guardamos el corpus preprocesado
-ds.saveCorpus('../data/SalidaPipelinePreProcesamientoLexico.jsonl')
+ds.saveCorpus()
 print('%d hilos, %.02f segundos' % (numThreads,time.time() - init))

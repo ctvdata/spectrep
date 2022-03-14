@@ -2,7 +2,9 @@ from abc import ABCMeta
 from abc import abstractmethod
 from threading import Thread, Lock
 import json
+from xmlrpc.client import boolean
 import nltk
+import numpy as np
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -280,27 +282,74 @@ class Sink(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def saveCorpus(self, outputPath):
+    def saveCorpus(self):
         pass
 
 class DocumentSink(Sink):
-    def __init__(self):
+    """
+    Permite guardar el corpus limpio en una archivo
+    @type  order: bool
+    @param order: Indica si el corpus se guardará ordenado
+    @type  outputPath: str
+    @param outputPath: Ruta del archivo de salida que contendrá el corpus
+    """ 
+    
+    def __init__(self, order, outputPath):
         self.__lock = Lock()
         self.__corpus = {}
-
+        self.__order = order
+        self.__outputPath = outputPath
 
     
     def addPreprocessedBatch(self, batch):
+        """
+        Recibe un bloque del corpus, en caso de querer guardar el corpus
+        ordenado los bloques se van almacenando, en caso contrario se guardan
+        de manera inmediata en el archivo con la ruta de salida establecida.
+
+        Método pensado para que varios hilos de ejecución puedan utilizarlo.
+        @type  batch: dict
+        @param batch: Diccionario con el número de bloque y el contenido del mismo
+        """
         with self.__lock:
             self.__corpus[batch[0]] = batch[1]
+            if not self.__order:
+                #Guardamos en el archivo
+                self.saveCorpus()
+                #Limpiamos el corpus
+                self.__corpus = {}
     
     def __sortBatches(self):
+        """
+        Ordena el corpus dado el id del bloque en el corpus original
+        """
         self.__corpus = {k: v for k, v in sorted(self.__corpus.items())}
 
-    def saveCorpus(self, outputPath):
+    def saveCorpus(self):
+        """
+        Guarda el corpus en la ruta establecida 
+        """
+        #no importa si no se quiere ordenar porque en ese caso sólo mandamos un bloque
         self.__sortBatches() 
-
-        with open(outputPath,"w") as f:
+        #Si se quiere ordenar sobreescribimos el archivo, en caso contrario iremos 
+        # agregando los bloques sin eliminar los anteriores
+        write = "w" if self.__order else "a+"
+        with open(self.__outputPath, write) as f:
             for batch in self.__corpus.values():
-                for  text in batch:
-                    f.write("id: {0}, text: {1} \n".format(text['id'], text['text']))
+                for text in batch:
+                    #Formato de jsonl
+                    f.write(json.dumps(text, cls=NumpyEncoder) + "\n")
+    
+class NumpyEncoder(json.JSONEncoder):
+    """ Special json encoder for numpy types """
+    def default(self, obj):
+        if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+                            np.int16, np.int32, np.int64, np.uint8,
+                            np.uint16, np.uint32, np.uint64)):
+            return int(obj)
+        elif isinstance(obj, (np.float_, np.float16, np.float32,
+                              np.float64)):
+            return float(obj)
+        elif isinstance(obj, (np.ndarray,)):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
