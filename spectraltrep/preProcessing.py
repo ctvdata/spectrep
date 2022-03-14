@@ -299,7 +299,6 @@ class DocumentSink(Sink):
         self.__corpus = {}
         self.__order = order
         self.__outputPath = outputPath
-
     
     def addPreprocessedBatch(self, batch):
         """
