@@ -2,7 +2,6 @@ import sys
 sys.path.append('..')
 import numpy as np
 from spectraltrep.preProcessing import PreprocessorFactory, CorpusReader, DocumentSink
-from threading import Lock
 import time
 
 init = time.time()

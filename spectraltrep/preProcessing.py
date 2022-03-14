@@ -14,6 +14,7 @@ from nltk.tokenize import word_tokenize
 import re
 from nltk.stem import WordNetLemmatizer
 wordnet.ensure_loaded()
+from pathlib import Path
 import pdb
 
 class Dispatcher(metaclass=ABCMeta):
@@ -223,6 +224,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
         self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
         self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
         self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        self.__stop_words = set(stopwords.words('english'))
     
     def preProcess(self, text):
         text = text.lower()
@@ -234,6 +236,10 @@ class SemanticPreprocessor(Preprocessor, Thread):
         text = self.__DELETE_QM.sub("", text)
         text = self.__DELETE_PUNCTUATION.sub('', text)
         text = self.__REPLACE_DIGITS.sub('<NUM>', text)
+        
+        word_tokens = word_tokenize(text)
+        text = [w for w in word_tokens if not w in self.__stop_words]
+        text = ' '.join(text)
         
         return text
 
@@ -287,8 +293,6 @@ class DocumentSink(Sink):
     def __init__(self):
         self.__lock = Lock()
         self.__corpus = {}
-
-
     
     def addPreprocessedBatch(self, batch):
         with self.__lock:
@@ -304,3 +308,41 @@ class DocumentSink(Sink):
             for batch in self.__corpus.values():
                 for  text in batch:
                     f.write("id: {0}, text: {1} \n".format(text['id'], text['text']))
+
+class PreProcessingFacade():
+    def preProcess(self, input, output, preProcessingType=["lex", "syn", "sem"], numThreads=1, batchSize=3000):
+
+        ppf = PreprocessorFactory()        
+        
+        try:
+            for tp in preProcessingType:
+                cr = CorpusReader(input, batchSize)
+                ds = DocumentSink()
+
+                # Inicializamos hilos de preprocesamiento
+                PreprocessingThreads = []
+                for _ in range(numThreads):
+                    if tp=="lex":
+                        pp = ppf.createLexicPreprocessor(cr, ds)
+                    elif tp=="syn":
+                        pp = ppf.createSyntacticPreprocessor(cr, ds)
+                    elif tp=="sem":
+                        pp = ppf.createSemanticPreprocessor(cr, ds)
+                    else:
+                        raise Exception("Tipo de preprocesamiento no valido.")
+                    
+                    pp.start()
+                    PreprocessingThreads.append(pp)
+
+                # Esperamos a que terminen los hilos de preprocesamiento
+                for t in PreprocessingThreads:
+                    t.join()
+
+                # Guardamos el corpus preprocesado
+                p = Path(output)
+                fileName = '{}_{}{}'.format(p.stem, tp, p.suffix)
+                ds.saveCorpus(Path(p.parent, fileName))
+
+        except Exception as err:
+            print(err)
+        
