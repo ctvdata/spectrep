@@ -15,6 +15,7 @@ import re
 from nltk.stem import WordNetLemmatizer
 wordnet.ensure_loaded()
 from pathlib import Path
+import inspect
 import pdb
 
 class Dispatcher(metaclass=ABCMeta):
@@ -33,7 +34,7 @@ class CorpusReader(Dispatcher):
     """
     def __init__(self, inputPath=None, batchSize=3000):
         self.__inputPath = inputPath
-        self.__lock = Lock()
+        # self.__lock = Lock()
         self.__batchSize = batchSize
 
     def getBatch(self):
@@ -44,27 +45,27 @@ class CorpusReader(Dispatcher):
         @rtype: (int, lista de diccionarios)
         @return: La tupla que contiene el id del batch y el batch actual.
         """
-        with self.__lock:
-            # Lista de diccionarios que representará el batch de documentos.
-            batch = []
-            # Líneas procesadas hasta el momento.
-            processedLines = 0
-            # Id del batch actual.
-            idBatch = 0
+        
+        # Lista de diccionarios que representará el batch de documentos.        
+        batch = []
+        # Líneas procesadas hasta el momento.
+        processedLines = 0
+        # Id del batch actual.
+        idBatch = 0
 
-            with open(self.__inputPath) as infile:
-                for line in infile:
-                    batch.append(json.loads(line))
-                    processedLines += 1
-                    
-                    if processedLines == self.__batchSize:
-                        idBatch += 1
-                        processedLines = 0
-                        yield idBatch, batch
-                        batch = []
-                if processedLines < self.__batchSize:
+        with open(self.__inputPath) as infile:
+            for line in infile:
+                batch.append(json.loads(line))
+                processedLines += 1
+                
+                if processedLines == self.__batchSize:
                     idBatch += 1
+                    processedLines = 0
                     yield idBatch, batch
+                    batch = []
+            if processedLines < self.__batchSize:
+                idBatch += 1
+                yield idBatch, batch
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
@@ -75,7 +76,7 @@ class LexicPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
         Thread.__init__(self)
         try:
-            if isinstance(dispatcher, Dispatcher):
+            if isinstance(dispatcher, LockedIterator):
                 self.__dispatcher = dispatcher
             else:
                 raise Exception("Non-valid instance of dispatcher.")
@@ -120,7 +121,7 @@ class LexicPreprocessor(Preprocessor, Thread):
 
     def run(self):
         while(True):
-            batch = self.__dispatcher.getBatch()
+            batch = next(self.__dispatcher)
             if(batch != '<EOC>'):
                 
                 documents = []
@@ -136,7 +137,7 @@ class SyntacticPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
         Thread.__init__(self)
         try:
-            if isinstance(dispatcher, Dispatcher):
+            if isinstance(dispatcher, LockedIterator):
                 self.__dispatcher = dispatcher
             else:
                 raise Exception("Non-valid instance of dispatcher.")
@@ -176,9 +177,8 @@ class SyntacticPreprocessor(Preprocessor, Thread):
 
     def run(self):
         while(True):
-            batch = self.__dispatcher.getBatch()
-            if(batch != '<EOC>'):
-                
+            batch = next(self.__dispatcher)
+            if(batch != '<EOC>'):                
                 documents = []
 
                 for t in batch[1]:
@@ -192,7 +192,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
     def __init__(self, dispatcher, sink):
         Thread.__init__(self)
         try:
-            if isinstance(dispatcher, Dispatcher):
+            if isinstance(dispatcher, LockedIterator):
                 self.__dispatcher = dispatcher
             else:
                 raise Exception("Non-valid instance of dispatcher.")
@@ -234,7 +234,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
 
     def run(self):
         while(True):
-            batch = self.__dispatcher.getBatch()
+            batch = next(self.__dispatcher)
             if(batch != '<EOC>'):
                 
                 documents = []
@@ -305,18 +305,19 @@ class PreProcessingFacade():
         
         try:
             for tp in preProcessingType:
-                cr = CorpusReader(input, batchSize)
+                cr = CorpusReader(input, batchSize).getBatch()
+                lockedCr = LockedIterator(cr)
                 ds = DocumentSink()
 
                 # Inicializamos hilos de preprocesamiento
                 PreprocessingThreads = []
                 for _ in range(numThreads):
                     if tp=="lex":
-                        pp = ppf.createLexicPreprocessor(cr, ds)
+                        pp = ppf.createLexicPreprocessor(lockedCr, ds)
                     elif tp=="syn":
-                        pp = ppf.createSyntacticPreprocessor(cr, ds)
+                        pp = ppf.createSyntacticPreprocessor(lockedCr, ds)
                     elif tp=="sem":
-                        pp = ppf.createSemanticPreprocessor(cr, ds)
+                        pp = ppf.createSemanticPreprocessor(lockedCr, ds)
                     else:
                         raise Exception("Tipo de preprocesamiento no valido.")
                     
@@ -335,3 +336,14 @@ class PreProcessingFacade():
         except Exception as err:
             print(err)
         
+class LockedIterator(object):
+    def __init__(self, it):
+        self.__lock = Lock()
+        self.__it = iter(it)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        with self.__lock:
+            return next(self.__it, '<EOC>')
