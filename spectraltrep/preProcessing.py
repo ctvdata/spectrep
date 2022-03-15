@@ -23,59 +23,48 @@ class Dispatcher(metaclass=ABCMeta):
         pass
 
 class CorpusReader(Dispatcher):
+    """
+    Nos permite mandar el Corpus en batches (lotes) para que no se
+    sobrecargue la memoria.
+    @type inputPath: str
+    @param inputPath: La ruta del Corpus a leer.
+    @type batchSize: int
+    @param batchSize: Tamaño de los batches.
+    """
     def __init__(self, inputPath=None, batchSize=3000):
         self.__inputPath = inputPath
         self.__lock = Lock()
         self.__batchSize = batchSize
-        self.__idBatch = 0
-        self.__numberOfLines = self.__countLines()
 
     def getBatch(self):
+        """
+        Nos ayuda a leer el archivo del Corpus en formato jsonl
+        para crear batches (lotes) de documentos a los cuáles se les asigna
+        un id único.
+        @rtype: (int, lista de diccionarios)
+        @return: La tupla que contiene el id del batch y el batch actual.
+        """
         with self.__lock:
-            # Si el número lineas procesadas es mayor o igual
-            #  al número de líneas totales, solo mandamos el token.
-            processedLines = self.__idBatch * self.__batchSize #512
-            if processedLines >= self.__numberOfLines:
-                return '<EOC>'
-
-            # Aumentamos el id del batch.
-            self.__idBatch += 1
-
-            # Variable auxiliar que indica en que línea vamos.
-            currentLine = 1
+            # Lista de diccionarios que representará el batch de documentos.
+            batch = []
+            # Líneas procesadas hasta el momento.
+            processedLines = 0
+            # Id del batch actual.
+            idBatch = 0
 
             with open(self.__inputPath) as infile:
-                # Variables auxiliares para el mínimo y máximo rango del batchSize.
-                minRange = self.__batchSize * (self.__idBatch - 1)
-                maxRange = self.__batchSize * self.__idBatch
-
-                # Lista de diccionarios que representará el batch de documentos.
-                batch = []
-
                 for line in infile:
-                    # Revisamos si estamos dentro del rango del batchSize.
-                    if currentLine > minRange and currentLine < maxRange:
-                        batch.append(json.loads(line))
-                    elif currentLine == maxRange:
-                        batch.append(json.loads(line))
-                        break
+                    batch.append(json.loads(line))
+                    processedLines += 1
                     
-                    currentLine += 1
-
-                # Regresamos el batch actual junto con su id.
-                return self.__idBatch, batch
-    
-    # Método auxiliar para contar el número de líneas del archivo
-    # Esto ayudará a que una vez que se termine de leer el archivo, no se
-    # vuelva a leer el archivo.
-    def __countLines(self):
-        lines = 0
-
-        with open(self.__inputPath) as infile:
-            for _ in infile:
-                lines += 1
-
-        return lines
+                    if processedLines == self.__batchSize:
+                        idBatch += 1
+                        processedLines = 0
+                        yield idBatch, batch
+                        batch = []
+                if processedLines < self.__batchSize:
+                    idBatch += 1
+                    yield idBatch, batch
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
