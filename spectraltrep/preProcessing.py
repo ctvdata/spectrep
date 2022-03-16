@@ -17,8 +17,6 @@ import re
 from nltk.stem import WordNetLemmatizer
 wordnet.ensure_loaded()
 from pathlib import Path
-import inspect
-import pdb
 
 class Dispatcher(metaclass=ABCMeta):
     @abstractmethod
@@ -36,7 +34,6 @@ class CorpusReader(Dispatcher):
     """
     def __init__(self, inputPath=None, batchSize=3000):
         self.__inputPath = inputPath
-        # self.__lock = Lock()
         self.__batchSize = batchSize
 
     def getBatch(self):
@@ -303,7 +300,7 @@ class DocumentSink(Sink):
         de manera inmediata en el archivo con la ruta de salida establecida.
 
         Método pensado para que varios hilos de ejecución puedan utilizarlo.
-        @type  batch: dict
+        @type  batch: list
         @param batch: Diccionario con el número de bloque y el contenido del mismo
         """
         with self.__lock:
