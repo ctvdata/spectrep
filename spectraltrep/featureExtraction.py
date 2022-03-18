@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
@@ -45,20 +46,27 @@ class Vectorizer(metaclass=ABCMeta):
     def transform(self, corpus):
         pass
 
+    @abstractmethod
+    def saveModel(self, outputPath):
+        pass
+
 class LexicVectorizer(Vectorizer):
     @property
     def model(self):
         return self.__model
 
     @model.setter
-    def set_model(self, model):
-        self.__model = model
+    def set_model(self, inputPath):
+        self.__model = Doc2Vec().load(inputPath)
     
     def fit(self, corpus):
         pass
 
     def transform(self, corpus):
         pass
+
+    def saveModel(self, outputPath):
+        self.__model.save(outputPath)
 
 class SyntacticVectorizer(Vectorizer):
     @property
@@ -66,14 +74,17 @@ class SyntacticVectorizer(Vectorizer):
         return self.__model
 
     @model.setter
-    def set_model(self, model):
-        self.__model = model
+    def set_model(self, inputPath):
+        self.__model = Doc2Vec().load(inputPath)
     
     def fit(self, corpus):
         pass
 
     def transform(self, corpus):
         pass
+
+    def saveModel(self, outputPath):
+        self.__model.save(outputPath)
 
 class SemanticVectorizer(Vectorizer):
     @property
@@ -81,14 +92,17 @@ class SemanticVectorizer(Vectorizer):
         return self.__model
 
     @model.setter
-    def set_model(self, model):
-        self.__model = model
+    def set_model(self, inputPath):
+        self.__model = Doc2Vec().load(inputPath)
     
     def fit(self, corpus):
         pass
 
     def transform(self, corpus):
         pass
+
+    def saveModel(self, outputPath):
+        self.__model.save(outputPath)
 
 class VectorizerAbstractFactory(metaclass=ABCMeta):
     @abstractmethod
