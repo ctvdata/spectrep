@@ -87,6 +87,11 @@ class SyntacticVectorizer(Vectorizer):
         self.__model.save(outputPath)
 
 class SemanticVectorizer(Vectorizer):
+    def __init__(self, corpusReader, vectorWriter, vectorSize=50, minCount=1, epochs=10):
+        self.__model = Doc2Vec(vector_size=vectorSize, min_count=minCount, epochs=epochs)
+        self.__corpusReader = corpusReader
+        self.__vectorWriter = vectorWriter
+
     @property
     def model(self):
         return self.__model
@@ -95,7 +100,9 @@ class SemanticVectorizer(Vectorizer):
     def set_model(self, inputPath):
         self.__model = Doc2Vec().load(inputPath)
     
-    def fit(self, corpus):
+    def fit(self):
+        self.__model.build_vocab(self.__corpusReader)
+        self.__model.train(self.__corpusReader, total_examples=self.__model.corpus_count, epochs=self.__model.epochs)
         pass
 
     def transform(self, corpus):
