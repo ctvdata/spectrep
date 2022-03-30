@@ -195,7 +195,7 @@ class SOMNet:
         
         dists = self.interface.pairdist(vecs,
                         self.interface.num.array([n.weights for n in self.node_list]), 
-                        metric=self.metric, n_jobs=-1, **self.metric_kwds)
+                        metric=self.metric, **self.metric_kwds)
 
         return self.interface.num.argmin(dists,axis=1)
    
@@ -249,25 +249,25 @@ class SOMNet:
             """
             #---------------------------------------------------------------------------
             # Bloque agregado para realizar concurrencia en la actualizacion de pesos
-            core_number = mp.cpu_count() # Numero de cores
+            # core_number = mp.cpu_count() # Numero de cores
 
-            batch_size = math.ceil(len(self.node_list) / core_number) # Numero de nodos por batch
-            node_sublist = []
-            for i in np.arange(core_number):
-                node_sublist.append(self.node_list[batch_size*i:batch_size*(i+1)])
+            # batch_size = math.ceil(len(self.node_list) / core_number) # Numero de nodos por batch
+            # node_sublist = []
+            # for i in np.arange(core_number):
+            #     node_sublist.append(self.node_list[batch_size*i:batch_size*(i+1)])
 
-            def concurrentlyUpdateWeights(nodes, input_vec, bmu):
-                """
-                Auxiliar para realizar la actualizacion de pesos de manera concurrente
-                """
-                for node in nodes:
-                    node.update_weights(input_vec[0], self.sigma, self.learning_rate, bmu)
+            # def concurrentlyUpdateWeights(nodes, input_vec, bmu):
+            #     """
+            #     Auxiliar para realizar la actualizacion de pesos de manera concurrente
+            #     """
+            #     for node in nodes:
+            #         node.update_weights(input_vec[0], self.sigma, self.learning_rate, bmu)
             #---------------------------------------------------------------------------
 
             for n_iter in range(self.epochs):
-                print(f"Training SOM epoch {n_iter}",end='\r')
-                # if n_iter%10==0:
-                #     print("\rTraining SOM... {:d}%".format(int(n_iter*100.0/self.epochs)), end='\r')
+                # print(f"Training SOM epoch {n_iter}",end='\r')
+                if n_iter%10==0:
+                    print("\rTraining SOM... {:d}%".format(int(n_iter*100.0/self.epochs)), end='\r')
 
                 self.update_sigma(n_iter)
                 self.update_learning_rate(n_iter)
@@ -276,19 +276,19 @@ class SOMNet:
 
                 bmu = self.node_list[int(self.find_bmu_ix(input_vec)[0])]
 
-                # for node in self.node_list:
-                #     node.update_weights(input_vec[0], self.sigma, self.learning_rate, bmu)
+                for node in self.node_list:
+                    node.update_weights(input_vec[0], self.sigma, self.learning_rate, bmu)
                 
                 #---------------------------------------------------------------------------
                 # Bloque agregado para realizar concurrencia en la actualizacion de pesos
-                trds = []
-                for node_batch in node_sublist:
-                    t = threading.Thread(target=concurrentlyUpdateWeights, args=(node_batch, input_vec, bmu,))
-                    t.start()
-                    trds.append(t)
+                # trds = []
+                # for node_batch in node_sublist:
+                #     t = threading.Thread(target=concurrentlyUpdateWeights, args=(node_batch, input_vec, bmu,))
+                #     t.start()
+                #     trds.append(t)
 
-                for t in trds:
-                    t.join()
+                # for t in trds:
+                #     t.join()
                 #---------------------------------------------------------------------------
 
         elif train_algo == 'batch':
