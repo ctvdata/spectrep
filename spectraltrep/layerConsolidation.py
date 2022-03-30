@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 import json
 from threading import Thread, Lock
+import numpy as np
+from spectraltrep.preProcessing import DocumentSink
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
@@ -20,10 +22,12 @@ class CorpusReader(Reader):
         """
         Generador que leé el archivo de tipo jsonl y regresa el id y su
         espectro correspondiente y así evitar sobrecargar la memoria.
-        @type path: string
-        @param path: La ruta del archivo jsonl que corresponde al spectre.
-        @rtype: (int, lista bidimensional de tipo double)
-        @return: El id y su spectre correspondiente.
+        
+        Args:
+            path (str): La ruta del archivo jsonl que corresponde al spectre.
+        
+        Returns:
+            (int, lista bidimensional de tipo double): El id y su spectre correspondiente.
         """
         with self.__lock:
             with open(path) as infile:
@@ -33,9 +37,51 @@ class CorpusReader(Reader):
 
 class Resambler(metaclass=ABCMeta):
     @abstractmethod
-    def resamble(self, spectra, metadata):
+    def resamble(self, *spectra):
         pass
 
 class Projector(Resambler):
-    def resamble(self, spectra, metadata):
-        pass
+    """
+    Permite unificar los espectros de las diferentes características de un corpus
+
+    Args:
+        outputPath (str): Ruta del archivo de salida que contendrá los espectros unificados 
+    """ 
+
+    def __init__(self, outputPath):
+        self.__outputPath = outputPath
+        
+    def __unify(self, spectra):
+        """
+        Junta los espectros de un texto en un solo vector
+        
+        Args:
+            spectra (list): Tupla que contiene (id, espectros)
+        
+        Returns:
+            (int, list): El id y una lista que contiene las listas de cada espectro.
+        """
+        id = spectra[0][0]
+        vectors = np.array([v[1][1] for v in spectra])
+  
+        return id,[{'id': id, 'spectra': vectors}]
+
+    def resamble(self, *spectra):
+        """
+        Unifica los espectros de un corpus y los guarda en un archivo
+
+        Args:
+            *spectra (str): Cada parámetro será la ruta del archivo donde 
+            se encuentra la información de cada spectro
+        """
+        ds = DocumentSink(self.__outputPath, False)
+        docReader = [CorpusReader() for i in spectra]
+        generators = [doc.read_spectre(s) for doc, s in zip(docReader, spectra)]
+
+        try:
+            while True:
+                batch = [next(gen) for gen in generators]
+                ds.addPreprocessedBatch(self.__unify(batch))
+        except StopIteration:
+            print("Información guardada")
+

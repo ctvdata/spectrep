@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>featureExtraction module &mdash; documentación de Spectral Text Representation - </title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="next" title="layerConsolidation module" href="layerConsolidation.html" />
+    <link rel="prev" title="spectraltrep" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Spectral Text Representation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">spectraltrep</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">featureExtraction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layerConsolidation.html">layerConsolidation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preProcessing.html">preProcessing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spaceUnification.html">spaceUnification module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Spectral Text Representation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">spectraltrep</a> &raquo;</li>
+      <li>featureExtraction module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_modules/featureExtraction.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-featureExtraction">
+<span id="featureextraction-module"></span><h1>featureExtraction module<a class="headerlink" href="#module-featureExtraction" title="Enlazar permanentemente con este título"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.Doc2VecCorpusReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">Doc2VecCorpusReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Doc2VecCorpusReader" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#featureExtraction.Reader" title="featureExtraction.Reader"><code class="xref py py-class docutils literal notranslate"><span class="pre">featureExtraction.Reader</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.Doc2VecCorpusReader.readCorpus">
+<span class="sig-name descname"><span class="pre">readCorpus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Doc2VecCorpusReader.readCorpus" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">LexicModel</span></span><a class="headerlink" href="#featureExtraction.LexicModel" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.addToken">
+<span class="sig-name descname"><span class="pre">addToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.addToken" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.corpusTotalTokens">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">corpusTotalTokens</span></span><a class="headerlink" href="#featureExtraction.LexicModel.corpusTotalTokens" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.getTokenFrequency">
+<span class="sig-name descname"><span class="pre">getTokenFrequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.getTokenFrequency" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.getTokenId">
+<span class="sig-name descname"><span class="pre">getTokenId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.getTokenId" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.getTokenProbability">
+<span class="sig-name descname"><span class="pre">getTokenProbability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.getTokenProbability" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.getVocabulary">
+<span class="sig-name descname"><span class="pre">getVocabulary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.getVocabulary" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.load" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.save" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.setToken2Id">
+<span class="sig-name descname"><span class="pre">setToken2Id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicModel.setToken2Id" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featureExtraction.LexicModel.vocabularyLength">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vocabularyLength</span></span><a class="headerlink" href="#featureExtraction.LexicModel.vocabularyLength" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.LexicVectorizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">LexicVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorWriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#featureExtraction.Vectorizer" title="featureExtraction.Vectorizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">featureExtraction.Vectorizer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicVectorizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicVectorizer.fit" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featureExtraction.LexicVectorizer.model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#featureExtraction.LexicVectorizer.model" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicVectorizer.saveModel">
+<span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicVectorizer.saveModel" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.LexicVectorizer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.LexicVectorizer.transform" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.Reader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><a class="headerlink" href="#featureExtraction.Reader" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.Reader.readCorpus">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">readCorpus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Reader.readCorpus" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.SemanticVectorizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">SemanticVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorWriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minCount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SemanticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#featureExtraction.Vectorizer" title="featureExtraction.Vectorizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">featureExtraction.Vectorizer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SemanticVectorizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SemanticVectorizer.fit" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featureExtraction.SemanticVectorizer.model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#featureExtraction.SemanticVectorizer.model" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SemanticVectorizer.saveModel">
+<span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SemanticVectorizer.saveModel" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SemanticVectorizer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SemanticVectorizer.transform" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.SyntacticVectorizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">SyntacticVectorizer</span></span><a class="headerlink" href="#featureExtraction.SyntacticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#featureExtraction.Vectorizer" title="featureExtraction.Vectorizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">featureExtraction.Vectorizer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SyntacticVectorizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SyntacticVectorizer.fit" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SyntacticVectorizer.saveModel">
+<span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SyntacticVectorizer.saveModel" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.SyntacticVectorizer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.SyntacticVectorizer.transform" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.Vectorizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">Vectorizer</span></span><a class="headerlink" href="#featureExtraction.Vectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.Vectorizer.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Vectorizer.fit" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.Vectorizer.saveModel">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Vectorizer.saveModel" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.Vectorizer.transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.Vectorizer.transform" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerAbstractFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">VectorizerAbstractFactory</span></span><a class="headerlink" href="#featureExtraction.VectorizerAbstractFactory" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerAbstractFactory.createLexicVectorizer">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createLexicVectorizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerAbstractFactory.createLexicVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerAbstractFactory.createSemanticVectorizer">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createSemanticVectorizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerAbstractFactory.createSemanticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerAbstractFactory.createSyntacticVectorizer">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createSyntacticVectorizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerAbstractFactory.createSyntacticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featureExtraction.</span></span><span class="sig-name descname"><span class="pre">VectorizerFactory</span></span><a class="headerlink" href="#featureExtraction.VectorizerFactory" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#featureExtraction.VectorizerAbstractFactory" title="featureExtraction.VectorizerAbstractFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">featureExtraction.VectorizerAbstractFactory</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerFactory.createLexicVectorizer">
+<span class="sig-name descname"><span class="pre">createLexicVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorWriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerFactory.createLexicVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerFactory.createSemanticVectorizer">
+<span class="sig-name descname"><span class="pre">createSemanticVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorWriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minCount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerFactory.createSemanticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featureExtraction.VectorizerFactory.createSyntacticVectorizer">
+<span class="sig-name descname"><span class="pre">createSyntacticVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorWriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpusReader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minCount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featureExtraction.VectorizerFactory.createSyntacticVectorizer" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="modules.html" class="btn btn-neutral float-left" title="spectraltrep" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="layerConsolidation.html" class="btn btn-neutral float-right" title="layerConsolidation module" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2022, Melesio Crespo, Jorge Cortés, Karla Salas.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

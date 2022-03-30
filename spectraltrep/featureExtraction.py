@@ -1,12 +1,11 @@
 from abc import ABCMeta, abstractmethod
-from msilib.schema import Property
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import json
 from nltk.tokenize import word_tokenize
 import json
 import numpy as np
 
-from spectraltrep.layerConsolidation import CorpusReader
+from layerConsolidation import CorpusReader
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod

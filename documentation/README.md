@@ -2,7 +2,7 @@
 
 ```
 cd documentation
-sphinx-apidoc -o . ../spectraltrep/
+sphinx-apidoc -o ./_modules ../spectraltrep/
 make html
 ```
 

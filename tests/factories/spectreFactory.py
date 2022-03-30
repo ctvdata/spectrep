@@ -2,7 +2,7 @@ import numpy as np
 import json
 
 # Método auxiliar para crear un spectra.
-def create_spectre(size, matrix_size):
+def create_spectre(size, tp, matrix_size):
     list = []
 
     for i in range(size):
@@ -12,13 +12,14 @@ def create_spectre(size, matrix_size):
         dict['id'] = i
 
         # Creamos la matriz bidimensional aleatoria.
-        dict['spectre'] = np.random.rand(matrix_size,matrix_size).tolist()
+        dict['spectre'] = tp, np.random.rand(matrix_size,matrix_size).tolist()
 
         list.append(dict)
 
     # Creamos el archivo de tipo jsonl.
-    with open("data_dummy_spectre.jsonl", 'w') as f:
+    with open("../data/data_dummy_spectre_{}.jsonl".format(tp), 'w') as f:
         for item in list:
             f.write(json.dumps(item) + "\n")
 
-create_spectre(100, 5)
+for tp in ["lexic", "syntactic", "semantic"]:
+    create_spectre(100, tp,5)

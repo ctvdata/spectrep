@@ -10,4 +10,4 @@ Spectral Text Representation
    :maxdepth: 2
    :caption: Contenidos:
 
-   modules
+   _modules/modules
