@@ -4,15 +4,50 @@ import numpy as np
 import sys
 sys.path.append('..')
 from simpsom import SOMNet
+import json
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
-    def readFeatureVectors(self, inputPath):
+    def readFeatureVectors(self):
         pass
 
 class CorpusReader(Reader):
-    def readFeatureVectors(self, inputPath):
-        pass
+    def __init__(self, inputPath):
+        self.__inputPath = inputPath
+        self.__numLines = 0
+
+        with open(self.__inputPath) as f:
+            for _ in f:
+                self.__numLines +=1
+
+    @property
+    def numLines(self):
+        return self.__numLines
+
+    def readFeatureVector(self):
+        with open(self.__inputPath) as f:
+                for line in f:
+                    vector = json.loads(line)
+                    yield vector
+
+    #Hay que buscar si es posibe acopar esta funcion a SimpSom
+    # def readTrainingFeatureVectors(self, size):
+    #     indices = np.random.randint(0, self.__numLines, size)
+    #     for idx in indices:
+    #         with open(self.__inputPath) as f:
+    #             for line in f:
+    #                 vector = json.loads(line)
+    #                 if vector['id'] == idx:
+    #                     yield np.array(vector['vector'])
+    #                     break
+
+    def readFeatureVectors(self):
+        vectors = list()
+        with open(self.__inputPath) as f:
+            for line in f:
+                vector = json.loads(line)
+                vectors.append(vector['vector'])
+        return np.array(vectors)
 
 class Projector:
     def __init__(self, netLength=20, learningRate=0.01, epochs=1000):
