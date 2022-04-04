@@ -3,8 +3,9 @@ from abc import abstractmethod
 import numpy as np
 import sys
 sys.path.append('..')
-from simpsom import SOMNet
+from minisom.minisom import MiniSom
 import json
+import pickle
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
@@ -19,10 +20,6 @@ class CorpusReader(Reader):
         with open(self.__inputPath) as f:
             for _ in f:
                 self.__numLines +=1
-
-    @property
-    def numLines(self):
-        return self.__numLines
 
     def readFeatureVector(self):
         with open(self.__inputPath) as f:
@@ -50,42 +47,62 @@ class CorpusReader(Reader):
         return np.array(vectors)
 
 class Projector:
-    def __init__(self, netLength=20, learningRate=0.01, epochs=1000):
-        self.netLength=netLength
-        self.learningRate=learningRate
-        self.epochs=epochs
+    def __init__(self, netLength, numDimensions, learningRate=0.01):
+        self.__netLength=netLength
+        self.__model = MiniSom(netLength, netLength, numDimensions, learning_rate=learningRate)
 
-    def fit(self, featureVectors):
-        self.net = SOMNet(self.netLength, self.netLength, featureVectors, PBC=True)
-        self.net.train(self.learningRate, self.epochs)
+    def fit(self, featureVectors, epochs=10):
+        self.__model.train(featureVectors, epochs)
 
     def getProjection(self, featureVectors):
         """
         X: Matrix to project over the som grid of size (num of vectors, num of features)
-        nodeOperation: 'dot': Dot product or 'invEuc': inverse of euclidean distance
         """
         nrows = featureVectors.shape[0]
         i=0
         result_matrix = []
-        for row in np.array(featureVectors): 
-            j=0
-            image_document=np.zeros(shape=self.netLength*self.netLength, dtype=np.float32)
-            for node in self.net.nodeList:
-                image_document[j] = 1/np.linalg.norm(row-node.weights)
-                j=j+1
-            mn=image_document.min()
-            mx=image_document.max()
-            image_document = (255.9 * (image_document-mn)/(mx-mn)).astype(np.uint8)
-            image_document=image_document.reshape(self.netLength,self.netLength)
-            result_matrix.append(image_document)  
+        w = self.__model.get_weights
+        for row in featureVectors:
+            image_document = np.zeros(shape=(self.__netLength,self.__netLength), dtype=np.float32)
+        
+            for i in np.arange(featureVectors.shape[0]):
+                for j in np.arange(featureVectors.shape[1]):
+                    image_document[i,j] = 1/np.linalg.norm(row-w[i,j])
+            
+            result_matrix.append(image_document)
             s = "{}% Complete".format(int((i*100)/nrows))
             print(s, end='\r')
             i=i+1
+        
+        result_matrix = np.array(result_matrix)
+        result_matrix = 255.9 * (result_matrix - result_matrix.min()) / (result_matrix.max() - result_matrix.min())
+        
         print("100% Complete", end='\r')
-        return result_matrix 
+        
+        return result_matrix
+
+
+        # for row in featureVectors:
+        #     j=0
+        #     image_document=np.zeros(shape=self.__netLength*self.__netLength, dtype=np.float32)
+        #     for node in self.net.nodeList:
+        #         image_document[j] = 1/np.linalg.norm(row-node.weights)
+        #         j=j+1
+        #     mn=image_document.min()
+        #     mx=image_document.max()
+        #     image_document = (255.9 * (image_document-mn)/(mx-mn)).astype(np.uint8)
+        #     image_document=image_document.reshape(self.netLength,self.netLength)
+        #     result_matrix.append(image_document)  
+        #     s = "{}% Complete".format(int((i*100)/nrows))
+        #     print(s, end='\r')
+        #     i=i+1
+        # print("100% Complete", end='\r')
+        # return result_matrix 
 
     def saveSomModel(self, outputPath):
-        pass
+        with open(outputPath, 'wb') as outfile:
+            pickle.dump(self.__model, outfile)
 
     def loadSomModel(self, inputPath):
-        pass
+        with open(inputPath, 'rb') as infile:
+            self.__model = pickle.load(infile)
