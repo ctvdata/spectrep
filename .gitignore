@@ -2,3 +2,4 @@ spectraltrep/__pycache__/*
 tests/outputs/*
 simpsom/__pycache__/*
 simpsom/cluster/__pycache__/*
+minisom/__pycache__/*
