@@ -27,10 +27,11 @@ class CorpusReader(Dispatcher):
     """
     Nos permite mandar el Corpus en batches (lotes) para que no se
     sobrecargue la memoria.
-    @type inputPath: str
-    @param inputPath: La ruta del Corpus a leer.
-    @type batchSize: int
-    @param batchSize: Tamaño de los batches.
+
+    Args: 
+        inputPath (str): La ruta del Corpus a leer
+
+        batchSize (int): Tamaño de los batches
     """
     def __init__(self, inputPath=None, batchSize=3000):
         self.__inputPath = inputPath
@@ -41,8 +42,9 @@ class CorpusReader(Dispatcher):
         Nos ayuda a leer el archivo del Corpus en formato jsonl
         para crear batches (lotes) de documentos a los cuáles se les asigna
         un id único.
-        @rtype: (int, lista de diccionarios)
-        @return: La tupla que contiene el id del batch y el batch actual.
+
+        Returns:
+        (int, lista de diccionarios): La tupla que contiene el id del batch y el batch actual.
         """
         
         # Lista de diccionarios que representará el batch de documentos.        
@@ -280,10 +282,11 @@ class Sink(metaclass=ABCMeta):
 class DocumentSink(Sink):
     """
     Permite guardar el corpus limpio en una archivo
-    @type  sorted: bool
-    @param sorted: Indica si el corpus se guardará ordenado
-    @type  outputPath: str
-    @param outputPath: Ruta del archivo de salida que contendrá el corpus
+
+    Args:
+        sorted (bool): Indica si el corpus se guardará ordenado
+        
+        outputPath (str): Ruta del archivo de salida que contendrá el corpus  
     """ 
     
     def __init__(self, outputPath, sorted):
@@ -300,8 +303,9 @@ class DocumentSink(Sink):
         de manera inmediata en el archivo con la ruta de salida establecida.
 
         Método pensado para que varios hilos de ejecución puedan utilizarlo.
-        @type  batch: list
-        @param batch: Diccionario con el número de bloque y el contenido del mismo
+
+        Args:
+            batch (dic): Diccionario con el número de bloque y el contenido del mismo
         """
         with self.__lock:
             self.__corpus[batch[0]] = batch[1]
