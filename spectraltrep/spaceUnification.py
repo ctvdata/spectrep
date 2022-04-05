@@ -6,6 +6,7 @@ sys.path.append('..')
 from minisom.minisom import MiniSom
 import json
 import pickle
+import pdb
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
@@ -52,22 +53,23 @@ class Projector:
         self.__model = MiniSom(netLength, netLength, numDimensions, learning_rate=learningRate)
 
     def fit(self, featureVectors, epochs=10):
+        self.__model.pca_weights_init(featureVectors)
         self.__model.train(featureVectors, epochs)
 
-    def getProjection(self, featureVectors):
+    def getProjection(self, featureVectors, documentSink=None):
         """
         X: Matrix to project over the som grid of size (num of vectors, num of features)
         """
         nrows = featureVectors.shape[0]
         i=0
         result_matrix = []
-        w = self.__model.get_weights
+        nodes = self.__model.get_weights()
         for row in featureVectors:
             image_document = np.zeros(shape=(self.__netLength,self.__netLength), dtype=np.float32)
         
-            for i in np.arange(featureVectors.shape[0]):
-                for j in np.arange(featureVectors.shape[1]):
-                    image_document[i,j] = 1/np.linalg.norm(row-w[i,j])
+            for i in np.arange(image_document.shape[0]):
+                for j in np.arange(image_document.shape[1]):
+                    image_document[i,j] = 1/np.linalg.norm(row-nodes[i,j])
             
             result_matrix.append(image_document)
             s = "{}% Complete".format(int((i*100)/nrows))
@@ -76,10 +78,17 @@ class Projector:
         
         result_matrix = np.array(result_matrix)
         result_matrix = 255.9 * (result_matrix - result_matrix.min()) / (result_matrix.max() - result_matrix.min())
-        
+
         print("100% Complete", end='\r')
         
-        return result_matrix
+        if documentSink is None:
+            return result_matrix
+        else:
+            spectra = []
+            for idx, spectre in enumerate(result_matrix[:]):
+                spectra.append({'id':idx, 'spectre':spectre})    
+            documentSink.addPreprocessedBatch((0,spectra))
+            
 
 
         # for row in featureVectors:
@@ -106,3 +115,4 @@ class Projector:
     def loadSomModel(self, inputPath):
         with open(inputPath, 'rb') as infile:
             self.__model = pickle.load(infile)
+            self.__netLength = self.__model.get_weights().shape[0]
