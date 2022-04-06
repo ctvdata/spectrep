@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from threading import Thread
-import json
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')

@@ -1,14 +1,16 @@
 import sys
 sys.path.append('..')
-from spectraltrep.spaceUnification import CorpusReader, Projector
-from spectraltrep.preProcessing import DocumentSink
+from spectraltrep.spaceUnification import VectorReader, Projector
+from spectraltrep.utils import DocumentSink
 
-cr = CorpusReader('./outputs/SemanticVectors2.jsonl')
-proj = Projector(3,3)
-sink = DocumentSink('./outputs/SemanticSpectra.jsonl', False)
+# vr = VectorReader('./outputs/SemanticVectorsTrain.jsonl')
+vr = VectorReader('./outputs/LexicVectors.jsonl')
+proj = Projector(3,21743) # Indicamos el tamano de la capa de salida y las dimensiones de entrada
+sink = DocumentSink('./outputs/LexicSpectra.jsonl', False)
+# sink = DocumentSink('./outputs/SemanticSpectra.jsonl', False)
 
 print("Leyendo vectores")
-data = cr.readFeatureVectors()
+data = vr.readFeatureVectors()
 print("Entrenando som")
 proj.fit(data,10)
 # print("Obteninendo espectros")

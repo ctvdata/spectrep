@@ -12,7 +12,7 @@ class Reader(metaclass=ABCMeta):
     def readFeatureVectors(self):
         pass
 
-class CorpusReader(Reader):
+class VectorReader(Reader):
     def __init__(self, inputPath):
         self.__inputPath = inputPath
         self.__numLines = 0
