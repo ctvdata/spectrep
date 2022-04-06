@@ -1,7 +1,8 @@
 import sys
 sys.path.append('..')
 import numpy as np
-from spectraltrep.preProcessing import PreprocessorFactory, CorpusReader, DocumentSink
+from spectraltrep.preProcessing import PreprocessorFactory, CorpusReader
+from spectraltrep.utils import DocumentSink
 import time
 
 init = time.time()
@@ -11,7 +12,7 @@ batchSize = 3000 # Numero de documentos que entrega CorpusReader por batch
 # Creamos la fabrica de preprocesadores, el lector de corpus y el sink que recibe los documentos preprocesados
 ppf = PreprocessorFactory()
 cr = CorpusReader('../data/data.jsonl', batchSize)
-ds = DocumentSink("../data/SalidaPipelinePreProcesamientoLexico.jsonl", True)
+ds = DocumentSink("../outputs/SalidaPipelinePreProcesamientoLexico.jsonl", True)
 
 # Inicializamos hilos de preprocesamiento
 lexicPreprocessingThreads = []

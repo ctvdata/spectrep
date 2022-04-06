@@ -6,7 +6,6 @@ sys.path.append('..')
 from minisom.minisom import MiniSom
 import json
 import pickle
-import pdb
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod

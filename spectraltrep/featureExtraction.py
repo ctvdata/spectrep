@@ -5,8 +5,6 @@ from nltk.tokenize import word_tokenize
 import json
 import numpy as np
 
-from layerConsolidation import CorpusReader
-
 class Reader(metaclass=ABCMeta):
     @abstractmethod
     def readCorpus(self, inputPath):

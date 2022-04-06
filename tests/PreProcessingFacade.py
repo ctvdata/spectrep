@@ -5,7 +5,7 @@ import time
 
 def main():
     inputPath = '../data/data_sample.jsonl' # Archivo de entrada
-    outputPath = '../data/SalidaPipelinePreProcesamiento.jsonl' # Archivo de salida
+    outputPath = './outputs/SalidaPipelinePreProcesamiento.jsonl' # Archivo de salida
     preProcessingType = ['lex','syn','sem'] # Tipo de preprocesamiento aplicable ['lex', 'syn', 'sem']
     numThreads = 1 # Numero de hilos de preprocesamiento
     batchSize = 10 # Numero de documentos que entrega CorpusReader por batch

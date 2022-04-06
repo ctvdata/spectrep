@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
 from spectraltrep.featureExtraction import VectorizerFactory
-from spectraltrep.preProcessing import CorpusReader, DocumentSink, LockedIterator
+from spectraltrep.preProcessing import CorpusReader, DocumentSink
 import time
 
 if __name__ == '__main__':
