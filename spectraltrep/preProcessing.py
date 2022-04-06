@@ -1,6 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from threading import Thread, Lock
+from threading import Thread
 import json
 import nltk
 nltk.download('punkt')
@@ -16,56 +16,7 @@ from nltk.stem import WordNetLemmatizer
 wordnet.ensure_loaded()
 from pathlib import Path
 from spectraltrep.utils import DocumentSink, Sink
-
-class Dispatcher(metaclass=ABCMeta):
-    @abstractmethod
-    def getBatch(self):
-        pass
-
-class CorpusReader(Dispatcher):
-    """
-    Nos permite mandar el Corpus en batches (lotes) para que no se
-    sobrecargue la memoria.
-
-    Args: 
-        inputPath (str): La ruta del Corpus a leer
-
-        batchSize (int): Tamaño de los batches
-    """
-    def __init__(self, inputPath=None, batchSize=3000):
-        self.__inputPath = inputPath
-        self.__batchSize = batchSize
-
-    def getBatch(self):
-        """
-        Nos ayuda a leer el archivo del Corpus en formato jsonl
-        para crear batches (lotes) de documentos a los cuáles se les asigna
-        un id único.
-
-        Returns:
-        (int, lista de diccionarios): La tupla que contiene el id del batch y el batch actual.
-        """
-        
-        # Lista de diccionarios que representará el batch de documentos.        
-        batch = []
-        # Líneas procesadas hasta el momento.
-        processedLines = 0
-        # Id del batch actual.
-        idBatch = 0
-
-        with open(self.__inputPath) as infile:
-            for line in infile:
-                batch.append(json.loads(line))
-                processedLines += 1
-                
-                if processedLines == self.__batchSize:
-                    idBatch += 1
-                    processedLines = 0
-                    yield idBatch, batch
-                    batch = []
-            if processedLines < self.__batchSize:
-                idBatch += 1
-                yield idBatch, batch
+from spectraltrep.utils import LockedIterator, CorpusReader
 
 class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
@@ -307,15 +258,3 @@ class PreProcessingFacade():
 
         except Exception as err:
             print(err)
-        
-class LockedIterator(object):
-    def __init__(self, it):
-        self.__lock = Lock()
-        self.__it = iter(it)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        with self.__lock:
-            return next(self.__it, '<EOC>')
