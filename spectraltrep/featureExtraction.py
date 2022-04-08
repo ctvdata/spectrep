@@ -5,12 +5,7 @@ from nltk.tokenize import word_tokenize
 import json
 import numpy as np
 
-class Reader(metaclass=ABCMeta):
-    @abstractmethod
-    def readCorpus(self, inputPath):
-        pass
-
-class Doc2VecCorpusReader(Reader):
+class Doc2VecCorpusReader():
     def __init__(self, inputPath):
             self.__inputPath = inputPath
 
@@ -20,9 +15,6 @@ class Doc2VecCorpusReader(Reader):
                 line = json.loads(line)
                 tokens = word_tokenize(line['text'])
                 yield TaggedDocument(tokens, [int(line['id'])])
-
-    def readCorpus(self, inputPath):
-        pass
 
 class Vectorizer(metaclass=ABCMeta):
     @abstractmethod
