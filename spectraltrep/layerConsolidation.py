@@ -1,39 +1,37 @@
 from abc import ABCMeta, abstractmethod
 import json
-from threading import Thread, Lock
 import numpy as np
 from spectraltrep.preProcessing import DocumentSink
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
-    def read_spectre(self, path):
+    def readSpectra(self):
         pass
 
-class CorpusReader(Reader):
+class SpectraReader(Reader):
     """
     Nos permite mandar el espectro (spectre) del Corpus línea por línea 
     para que no se sobrecargue la memoria.
+    
+    Args:
+        path (str): La ruta del archivo jsonl que corresponde al spectre.
     """
 
-    def __init__(self):
-        self.__lock = Lock()
+    def __init__(self, inputPath=None):
+        self.__inputPath = inputPath
 
-    def read_spectre(self, path):
+    def readSpectra(self):
         """
         Generador que leé el archivo de tipo jsonl y regresa el id y su
         espectro correspondiente y así evitar sobrecargar la memoria.
         
-        Args:
-            path (str): La ruta del archivo jsonl que corresponde al spectre.
-        
         Returns:
             (int, lista bidimensional de tipo double): El id y su spectre correspondiente.
         """
-        with self.__lock:
-            with open(path) as infile:
-                for line in infile:
-                    spectre_line = json.loads(line)
-                    yield spectre_line['id'], spectre_line['spectre']
+        with open(self.__inputPath) as infile:
+            for line in infile:
+                spectre_line = json.loads(line)
+                yield spectre_line['id'], spectre_line['spectre']
 
 class Resambler(metaclass=ABCMeta):
     @abstractmethod
@@ -75,7 +73,7 @@ class Projector(Resambler):
             se encuentra la información de cada spectro
         """
         ds = DocumentSink(self.__outputPath, False)
-        docReader = [CorpusReader() for i in spectra]
+        docReader = [SpectraReader() for i in spectra]
         generators = [doc.read_spectre(s) for doc, s in zip(docReader, spectra)]
 
         try:
