@@ -1,8 +1,8 @@
 import sys
 sys.path.append('..')
-from spectraltrep.layerConsolidation import Projector
+from spectraltrep.layerConsolidation import SpectraAssembler
 
 
-projector = Projector("../data/SalidaAssembler.jsonl")
+assembler = SpectraAssembler("./outputs/SalidaAssembler.jsonl")
 path = "../data/data_dummy_spectre_"
-projector.resamble(path+"lexic.jsonl", path+"syntactic.jsonl", path+"semantic.jsonl")
+assembler.assemble(path+"lexic.jsonl", path+"syntactic.jsonl", path+"semantic.jsonl")

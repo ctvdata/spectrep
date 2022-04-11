@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import json
 import numpy as np
-from spectraltrep.preProcessing import DocumentSink
+from spectraltrep.utils import DocumentSink
 
 class Reader(metaclass=ABCMeta):
     @abstractmethod
@@ -17,7 +17,7 @@ class SpectraReader(Reader):
         path (str): La ruta del archivo jsonl que corresponde al spectre.
     """
 
-    def __init__(self, inputPath=None):
+    def __init__(self, inputPath):
         self.__inputPath = inputPath
 
     def readSpectra(self):
@@ -33,12 +33,12 @@ class SpectraReader(Reader):
                 spectre_line = json.loads(line)
                 yield spectre_line['id'], spectre_line['spectre']
 
-class Resambler(metaclass=ABCMeta):
+class Assembler(metaclass=ABCMeta):
     @abstractmethod
-    def resamble(self, *spectra):
+    def assemble(self, *spectra):
         pass
 
-class Projector(Resambler):
+class SpectraAssembler(Assembler):
     """
     Permite unificar los espectros de las diferentes características de un corpus
 
@@ -60,11 +60,11 @@ class Projector(Resambler):
             (int, list): El id y una lista que contiene las listas de cada espectro.
         """
         id = spectra[0][0]
-        vectors = np.array([v[1][1] for v in spectra])
-  
+        vectors = np.array([v[1] for v in spectra])
+
         return id,[{'id': id, 'spectra': vectors}]
 
-    def resamble(self, *spectra):
+    def assemble(self, *spectra):
         """
         Unifica los espectros de un corpus y los guarda en un archivo
 
@@ -73,8 +73,8 @@ class Projector(Resambler):
             se encuentra la información de cada spectro
         """
         ds = DocumentSink(self.__outputPath, False)
-        docReader = [SpectraReader() for i in spectra]
-        generators = [doc.read_spectre(s) for doc, s in zip(docReader, spectra)]
+        docReader = [SpectraReader(i) for i in spectra]
+        generators = [dr.readSpectra() for dr in docReader]
 
         try:
             while True:
