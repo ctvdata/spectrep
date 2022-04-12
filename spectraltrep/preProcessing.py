@@ -18,12 +18,30 @@ from spectraltrep.utils import DocumentSink, Sink
 from spectraltrep.utils import LockedIterator, CorpusReader
 
 class Preprocessor(metaclass=ABCMeta):
+    """Interfaz de preprocesamiento de texto"""
     @abstractmethod
     def preProcess(self, text):
+        """
+        Aplica una serie de tareas de preprocesamiento al texto de entrada.
+
+        Args:
+            text (str): Texto a preprocesar.
+        """
         pass
 
 class LexicPreprocessor(Preprocessor, Thread):
+    """
+    Hilo de preprocesamiento léxico de texto
+    
+    Attributes:
+        dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+        sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+    """
+
     def __init__(self, dispatcher, sink):
+        """Inicializa el hilo de preprocesamiento léxico"""
+
         Thread.__init__(self)
         try:
             if isinstance(dispatcher, LockedIterator):
@@ -51,6 +69,15 @@ class LexicPreprocessor(Preprocessor, Thread):
         self.__wordnet_lemmatizer = WordNetLemmatizer()
     
     def preProcess(self, text):
+        """
+        Aplica una serie de tareas de preprocesamiento al texto de entrada.
+
+        Args:
+            text (str): Texto a preprocesar.
+        Returns:
+            Texto preprocesado.
+        """
+
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -70,6 +97,8 @@ class LexicPreprocessor(Preprocessor, Thread):
         return text
 
     def run(self):
+        """Inicia el hilo de preprocesamiento."""
+
         while(True):
             batch = next(self.__dispatcher)
             if(batch != '<EOC>'):
@@ -84,7 +113,18 @@ class LexicPreprocessor(Preprocessor, Thread):
                 break
 
 class SyntacticPreprocessor(Preprocessor, Thread):
+    """
+    Hilo de preprocesamiento sintáctico de texto
+    
+    Attributes:
+        dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+        sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+    """
+
     def __init__(self, dispatcher, sink):
+        """Inicializa el hilo de preprocesamiento léxico"""
+
         Thread.__init__(self)
         try:
             if isinstance(dispatcher, LockedIterator):
@@ -110,6 +150,15 @@ class SyntacticPreprocessor(Preprocessor, Thread):
         self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
     
     def preProcess(self, text):
+        """
+        Aplica una serie de tareas de preprocesamiento al texto de entrada.
+
+        Args:
+            text (str): Texto a preprocesar.
+        Returns:
+            Texto preprocesado.
+        """
+
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -126,6 +175,8 @@ class SyntacticPreprocessor(Preprocessor, Thread):
         return text
 
     def run(self):
+        """Inicia el hilo de preprocesamiento."""
+
         while(True):
             batch = next(self.__dispatcher)
             if(batch != '<EOC>'):                
@@ -139,6 +190,15 @@ class SyntacticPreprocessor(Preprocessor, Thread):
                 break
 
 class SemanticPreprocessor(Preprocessor, Thread):
+    """
+    Hilo de preprocesamiento semántico de texto
+    
+    Attributes:
+        dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+        sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+    """
+
     def __init__(self, dispatcher, sink):
         Thread.__init__(self)
         try:
@@ -166,6 +226,15 @@ class SemanticPreprocessor(Preprocessor, Thread):
         self.__stop_words = set(stopwords.words('english'))
     
     def preProcess(self, text):
+        """
+        Aplica una serie de tareas de preprocesamiento al texto de entrada.
+
+        Args:
+            text (str): Texto a preprocesar.
+        Returns:
+            Texto preprocesado.
+        """
+
         text = text.lower()
         text = self.__DELETE_NEW_LINE.sub("", text)
         text = self.__DELETE_MIDSCORE.sub(" ", text)
@@ -183,6 +252,8 @@ class SemanticPreprocessor(Preprocessor, Thread):
         return text
 
     def run(self):
+        """Inicia el hilo de preprocesamiento."""
+
         while(True):
             batch = next(self.__dispatcher)
             if(batch != '<EOC>'):
@@ -197,31 +268,112 @@ class SemanticPreprocessor(Preprocessor, Thread):
                 break
 
 class PreprocessorAbstractFactory(metaclass=ABCMeta):
+    """
+    Fabrica abstracta de hilos de preprocesamiento.
+    """
+
     @abstractmethod
     def createLexicPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento léxico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        """
         pass
 
     @abstractmethod
     def createSyntacticPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento sintáctico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        """
         pass
     
     @abstractmethod
     def createSemanticPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento semántico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        """
         pass
 
 class PreprocessorFactory(PreprocessorAbstractFactory):
+    """
+    Fabrica de hilos de preprocesamiento.
+    """
+
     def createLexicPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento léxico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        Returns:
+            Hilo de preprocesamiento léxico.
+        """
         return LexicPreprocessor(dispatcher, sink)
     
     def createSyntacticPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento sintáctico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        Returns:
+            Hilo de preprocesamiento sintáctico.
+        """
         return SyntacticPreprocessor(dispatcher, sink)
 
     def createSemanticPreprocessor(self, dispatcher, sink):
+        """
+        Crea un hilo de preprocesamiento semántico.
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+        Returns:
+            Hilo de preprocesamiento semántico.
+        """
         return SemanticPreprocessor(dispatcher, sink)
 
 class PreProcessingFacade():
-    def preProcess(self, input, output, preProcessingType=["lex", "syn", "sem"], numThreads=1, batchSize=3000, sortedOutput=True):
+    """
+    Fachada de preprocesamiento
 
+    Abstrae la lógica de crear un pipeline de preprocesamiento
+    léxico, sintáctico y semántico.
+    """
+    
+    def preProcess(self, input, output, preProcessingType=["lex", "syn", "sem"], numThreads=1, batchSize=3000, sortedOutput=True):
+        """
+        Realiza el preprocesamiento de un corpus.
+
+        Args:
+            input (str): Ruta del archivo de entrada.
+            output (str): Ruta del archivo de salida.
+            preProcessingType (list): Lista de tipos de
+                preprocesamiento a realizar ["lex", "syn", "sem"].
+            numThreads (int): Número de hilos de preprocesamiento.
+            batchSize (int): Tamaño del lote de documentos por hilo de preprocesamiento.
+            sortedOutput (bool): Determina si los documentos del corpus preprocesado
+                tendrán el mismo orden de entrada.
+        """
         ppf = PreprocessorFactory()
         
         try:
