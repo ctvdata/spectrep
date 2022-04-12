@@ -32,14 +32,15 @@ class DocumentSink(Sink):
     
     def addPreprocessedBatch(self, batch):
         """
-        Recibe un bloque del corpus, en caso de querer guardar el corpus
+        Agrega un bloque preprocesado del corpus.
+        
+        En caso de querer guardar el corpus
         ordenado los bloques se van almacenando, en caso contrario se guardan
         de manera inmediata en el archivo con la ruta de salida establecida.
-
         Método pensado para que varios hilos de ejecución puedan utilizarlo.
 
         Args:
-            batch (dic): Diccionario con el número de bloque y el contenido del mismo
+            batch (dic): Diccionario con el identificador de bloque y el contenido del mismo
         """
         with self.__lock:
             self.__corpus[batch[0]] = batch[1]
@@ -57,7 +58,7 @@ class DocumentSink(Sink):
 
     def saveCorpus(self):
         """
-        Guarda el corpus en la ruta establecida 
+        Guarda el corpus preprocesado en la ruta establecida 
         """
         #no importa si no se quiere ordenar porque en ese caso sólo mandamos un bloque
         self.__sortBatches() 
@@ -85,32 +86,33 @@ class _NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 class Dispatcher(metaclass=ABCMeta):
+    """
+    Permite leer un corpus por lotes.
+    """
     @abstractmethod
     def getBatch(self):
         pass
 
 class CorpusReader(Dispatcher):
     """
-    Nos permite mandar el Corpus en batches (lotes) para que no se
-    sobrecargue la memoria.
+    Permite leer un corpus por lotes.
 
-    Args: 
-        inputPath (str): La ruta del Corpus a leer
-
-        batchSize (int): Tamaño de los batches
+    Attributes: 
+        inputPath (str): La ruta del Corpus a leer.
+        batchSize (int): Tamaño de los lotes.
     """
     def __init__(self, inputPath=None, batchSize=3000):
+        """Inicializa CorpusReader"""
         self.__inputPath = inputPath
         self.__batchSize = batchSize
 
     def getBatch(self):
         """
-        Nos ayuda a leer el archivo del Corpus en formato jsonl
-        para crear batches (lotes) de documentos a los cuáles se les asigna
-        un id único.
+        Crear lotes de documentos con un id único.
 
-        Returns:
-        (int, lista de diccionarios): La tupla que contiene el id del batch y el batch actual.
+        Yields:
+        (int, lista de diccionarios): La tupla que contiene el id del lote
+        y el contenido del mismo.
         """
         
         # Lista de diccionarios que representará el batch de documentos.        
@@ -135,7 +137,11 @@ class CorpusReader(Dispatcher):
                 yield idBatch, batch
 
 class LockedIterator(object):
+    """
+    Se utiliza para asegurar la sicronización de múltiples hilos al leer un corpus.
+    """
     def __init__(self, it):
+        """Inicializa Locked Iterator"""
         self.__lock = Lock()
         self.__it = iter(it)
 
