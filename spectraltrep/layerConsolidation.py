@@ -4,29 +4,45 @@ import numpy as np
 from spectraltrep.utils import DocumentSink
 
 class Reader(metaclass=ABCMeta):
+    """Lector de espectros de contenido."""
     @abstractmethod
     def readSpectra(self):
+        """Lee un espectro de contenido del archivo de entrada."""
         pass
 
 class SpectraReader(Reader):
     """
-    Nos permite mandar el espectro (spectre) del Corpus línea por línea 
-    para que no se sobrecargue la memoria.
+    Lector de espectros de contenido.
     
-    Args:
-        path (str): La ruta del archivo jsonl que corresponde al spectre.
+    Permite cargar el espectro del Corpus línea por línea.
+    
+    Attributes:
+        inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
+            con el siguiente formato:
+
+            {"id": idDelDocumento, "spectre": espectroDelDocumento}
+            ...
     """
 
     def __init__(self, inputPath):
+        """
+        Inicialzia el lector de espectros.
+
+        Args:
+            inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
+                con el siguiente formato:
+
+                {"id": idDelDocumento, "spectre": espectroDelDocumento}
+                ...
+        """
         self.__inputPath = inputPath
 
     def readSpectra(self):
         """
-        Generador que leé el archivo de tipo jsonl y regresa el id y su
-        espectro correspondiente y así evitar sobrecargar la memoria.
+        Lee un espectro de contenido del archivo de entrada.
         
-        Returns:
-            (int, lista bidimensional de tipo double): El id y su spectre correspondiente.
+        Yields:
+            (int, lista bidimensional de tipo double): El id y su spectro correspondiente.
         """
         with open(self.__inputPath) as infile:
             for line in infile:
@@ -34,30 +50,44 @@ class SpectraReader(Reader):
                 yield spectre_line['id'], spectre_line['spectre']
 
 class Assembler(metaclass=ABCMeta):
+    """Ensamblador de espectros de contenido"""
+
     @abstractmethod
     def assemble(self, *spectra):
+        """
+        Ensambla cada uno de los espectros de contenido en una sola matriz por documento.
+        """
         pass
 
 class SpectraAssembler(Assembler):
     """
-    Permite unificar los espectros de las diferentes características de un corpus
+    Ensamblador de espectros de contenido. 
+    
+    Permite unificar los espectros de las diferentes características de un corpus.
 
-    Args:
-        outputPath (str): Ruta del archivo de salida que contendrá los espectros unificados 
+    Attributes:
+        outputPath (str): Ruta del archivo de salida que contendrá los espectros ensamblados.
     """ 
 
     def __init__(self, outputPath):
+        """
+        Inicializa el ensamblador de espectros.
+
+        Args:
+            outputPath (str): Ruta del archivo de salida que contendrá
+                los espectros ensamblados.
+        """
         self.__outputPath = outputPath
         
     def __unify(self, spectra):
         """
-        Junta los espectros de un texto en un solo vector
+        Unifica los diferentes espectros de un mismo documento.
         
         Args:
-            spectra (list): Tupla que contiene (id, espectros)
+            spectra (list): Tupla que contiene (id, espectros).
         
         Returns:
-            (int, list): El id y una lista que contiene las listas de cada espectro.
+            (int, list): El id y una lista que contiene los espectros de un mismo documento.
         """
         id = spectra[0][0]
         vectors = np.array([v[1] for v in spectra])
@@ -66,7 +96,7 @@ class SpectraAssembler(Assembler):
 
     def assemble(self, *spectra):
         """
-        Unifica los espectros de un corpus y los guarda en un archivo
+        Ensambla cada uno de los espectros de contenido en una sola matriz por documento.
 
         Args:
             *spectra (str): Cada parámetro será la ruta del archivo donde 
@@ -82,4 +112,3 @@ class SpectraAssembler(Assembler):
                 ds.addPreprocessedBatch(self.__unify(batch))
         except StopIteration:
             print("Información guardada")
-
