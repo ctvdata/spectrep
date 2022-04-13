@@ -8,12 +8,41 @@ import json
 import pickle
 
 class Reader(metaclass=ABCMeta):
+    """
+    Lector de vectores de características.
+    """
     @abstractmethod
     def readFeatureVectors(self):
+        """
+        Carga vectores de características en memoria.
+        """
         pass
 
 class VectorReader(Reader):
+    """
+    Lector de vectores de características.
+
+    Attributes:
+        inputPath (str): Ruta del archivo de entrada. Este archivo debe ser un jsonl
+            con el siguiente foramto:
+
+                {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
+                ...
+
+        numLines (int): Número de líneas en el archivo de entrada.
+    """
+
     def __init__(self, inputPath):
+        """
+        Inicializa el lector de vectores de características.
+
+        Args:
+            inputPath (str): Ruta del archivo de entrada. Este archivo debe ser un jsonl
+                con el siguiente foramto:
+
+                {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
+                ...
+        """
         self.__inputPath = inputPath
         self.__numLines = 0
 
@@ -22,6 +51,14 @@ class VectorReader(Reader):
                 self.__numLines +=1
 
     def readFeatureVector(self):
+        """
+        Generador que carga vectores de características en memoria.
+        Esta función no está en uso para esta versión de la api.
+
+        Yields:
+            Vector de características.
+        """
+
         with open(self.__inputPath) as f:
                 for line in f:
                     vector = json.loads(line)
@@ -39,6 +76,12 @@ class VectorReader(Reader):
     #                     break
 
     def readFeatureVectors(self):
+        """
+        Carga vectores de características en memoria.
+
+        Returns:
+            Conjunto de vectores de características (NumPy.ndarray).
+        """
         vectors = list()
         with open(self.__inputPath) as f:
             for line in f:
@@ -47,17 +90,58 @@ class VectorReader(Reader):
         return np.array(vectors)
 
 class Projector:
+    """
+    Proyector de vectores de características.
+    
+    Hace uso de un modelo de Mapas Auto-organizados (SOM) para obtener espectros
+    del contenido.
+
+    Attributes:
+        netLength (int): Número de dimensiones del espectro a obtener (netLength * netLength).
+        model (MiniSOM): Modelo de mapas auto-organizados.
+    """
+
     def __init__(self, netLength, numDimensions, learningRate=0.01):
+        """
+        Inicializa el objeto Projector
+        
+        Args:
+            netLength (int): Número de dimensiones del espectro a obtener (netLength * netLength).
+            numDimensions (int): Número de dimensiones de los vectores de entrada.
+            learningRate (float): Taza de aprendizaje para el SOM.
+        """
+
         self.__netLength=netLength
         self.__model = MiniSom(netLength, netLength, numDimensions, learning_rate=learningRate)
 
     def fit(self, featureVectors, epochs=10):
+        """
+        Realiza el entrenamiento del modelo SOM para obtener los espectros
+        de contenido.
+
+        Args:
+            featureVectors (numpy.ndarray): Conjunto de vectores de características
+                para realizar el entrenamiento.
+            epochs (int): Número de iteraciones en las que se realizará el entrenamiento.
+        """
+
         self.__model.pca_weights_init(featureVectors)
         self.__model.train(featureVectors, epochs)
 
     def getProjection(self, featureVectors, documentSink=None):
         """
-        X: Matrix to project over the som grid of size (num of vectors, num of features)
+        Obteniene las proyecciones de un conjunto de vectores de características
+        en el modelo SOM previamente entrenado.
+
+        Args:
+            featureVectors (numpy.ndarray): Conjunto de vectores de características
+                a proyectar.
+            documentSink (DocumentSink): Recolector de vectores proyectados. En caso de
+                que no se proveea uno se devuelve una matriz de proyecciones.
+        
+        Returns:
+            Matriz de proyecciones en caso de que no se proveea un reclector
+            de vectores proyectados (DocumentSink).
         """
         nrows = featureVectors.shape[0]
         i=0
@@ -108,10 +192,22 @@ class Projector:
         # return result_matrix 
 
     def saveSomModel(self, outputPath):
+        """
+        Guarda el modelo SOM entrenado.
+
+        Args:
+            outputPath (str): Ruta de salida para el archivo del modelo de SOM.
+        """
         with open(outputPath, 'wb') as outfile:
             pickle.dump(self.__model, outfile)
 
     def loadSomModel(self, inputPath):
+        """
+        Carga un modelo de SOM previamente entrenado.
+
+        Args: 
+            inputPath (str): Ruta del archivo de entrada.
+        """
         with open(inputPath, 'rb') as infile:
             self.__model = pickle.load(infile)
             self.__netLength = self.__model.get_weights().shape[0]
