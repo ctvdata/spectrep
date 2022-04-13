@@ -18,7 +18,7 @@ class SpectraReader(Reader):
     
     Attributes:
         inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
-            con el siguiente formato:
+        con el siguiente formato:
 
             {"id": idDelDocumento, "spectre": espectroDelDocumento}
             ...
@@ -30,7 +30,7 @@ class SpectraReader(Reader):
 
         Args:
             inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
-                con el siguiente formato:
+            con el siguiente formato:
 
                 {"id": idDelDocumento, "spectre": espectroDelDocumento}
                 ...
@@ -99,8 +99,8 @@ class SpectraAssembler(Assembler):
         Ensambla cada uno de los espectros de contenido en una sola matriz por documento.
 
         Args:
-            *spectra (str): Cada parámetro será la ruta del archivo donde 
-            se encuentra la información de cada spectro
+            spectra (str): Cada parámetro será la ruta del archivo donde 
+            se encuentra la información de cada spectro.
         """
         ds = DocumentSink(self.__outputPath, False)
         docReader = [SpectraReader(i) for i in spectra]

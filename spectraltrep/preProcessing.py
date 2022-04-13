@@ -31,16 +31,17 @@ class Preprocessor(metaclass=ABCMeta):
 
 class LexicPreprocessor(Preprocessor, Thread):
     """
-    Hilo de preprocesamiento léxico de texto
+    Hilo de preprocesamiento léxico de texto.
     
     Attributes:
         dispatcher (LockedIterator): Objeto de sincronización de generadores
-            para hilos de preprocesamiento.
+        para hilos de preprocesamiento.
+        
         sink (DocumentSink): Objeto de recolección de documentos preprocesados.
     """
 
     def __init__(self, dispatcher, sink):
-        """Inicializa el hilo de preprocesamiento léxico"""
+        """Inicializa el hilo de preprocesamiento léxico."""
 
         Thread.__init__(self)
         try:
@@ -74,6 +75,7 @@ class LexicPreprocessor(Preprocessor, Thread):
 
         Args:
             text (str): Texto a preprocesar.
+
         Returns:
             Texto preprocesado.
         """
@@ -118,12 +120,21 @@ class SyntacticPreprocessor(Preprocessor, Thread):
     
     Attributes:
         dispatcher (LockedIterator): Objeto de sincronización de generadores
-            para hilos de preprocesamiento.
+        para hilos de preprocesamiento.
+
         sink (DocumentSink): Objeto de recolección de documentos preprocesados.
     """
 
     def __init__(self, dispatcher, sink):
-        """Inicializa el hilo de preprocesamiento léxico"""
+        """
+        Inicializa el hilo de preprocesamiento léxico
+
+        Args:
+            dispatcher (LockedIterator): Objeto de sincronización de generadores
+            para hilos de preprocesamiento.
+
+            sink (DocumentSink): Objeto de recolección de documentos preprocesados.        
+        """
 
         Thread.__init__(self)
         try:
@@ -155,6 +166,7 @@ class SyntacticPreprocessor(Preprocessor, Thread):
 
         Args:
             text (str): Texto a preprocesar.
+
         Returns:
             Texto preprocesado.
         """
@@ -195,7 +207,8 @@ class SemanticPreprocessor(Preprocessor, Thread):
     
     Attributes:
         dispatcher (LockedIterator): Objeto de sincronización de generadores
-            para hilos de preprocesamiento.
+        para hilos de preprocesamiento.
+
         sink (DocumentSink): Objeto de recolección de documentos preprocesados.
     """
 
@@ -280,6 +293,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
         """
         pass
@@ -292,6 +306,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
         """
         pass
@@ -304,6 +319,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
         """
         pass
@@ -320,7 +336,9 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+
         Returns:
             Hilo de preprocesamiento léxico.
         """
@@ -333,7 +351,9 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+
         Returns:
             Hilo de preprocesamiento sintáctico.
         """
@@ -346,7 +366,9 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Objeto de sincronización de generadores
             para hilos de preprocesamiento.
+
             sink (DocumentSink): Objeto de recolección de documentos preprocesados.
+
         Returns:
             Hilo de preprocesamiento semántico.
         """
@@ -366,13 +388,19 @@ class PreProcessingFacade():
 
         Args:
             input (str): Ruta del archivo de entrada.
+
             output (str): Ruta del archivo de salida.
+
             preProcessingType (list): Lista de tipos de
-                preprocesamiento a realizar ["lex", "syn", "sem"].
+
+            preprocesamiento a realizar ["lex", "syn", "sem"].
+
             numThreads (int): Número de hilos de preprocesamiento.
+
             batchSize (int): Tamaño del lote de documentos por hilo de preprocesamiento.
+
             sortedOutput (bool): Determina si los documentos del corpus preprocesado
-                tendrán el mismo orden de entrada.
+            tendrán el mismo orden de entrada.
         """
         ppf = PreprocessorFactory()
         

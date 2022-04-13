@@ -9,14 +9,21 @@ class Doc2VecCorpusReader():
     """
     Generador para leer documentos de un corpus.
 
-    Este gnerador es utilizado por la clase Doc2Vec del paquete GenSim
+    Este gnerador es utilizado por la clase Doc2Vec del paquete GenSim.
 
     Yields:
         TaggedDocument
     """
 
     def __init__(self, inputPath):
-            self.__inputPath = inputPath
+        """
+        Inicializa generador de documentos
+
+        Args:
+            inputPath (str): Ruta del archivo de entrada.
+        """
+        
+        self.__inputPath = inputPath
 
     def __iter__(self):        
         with open(self.__inputPath) as f:
@@ -26,7 +33,7 @@ class Doc2VecCorpusReader():
                 yield TaggedDocument(tokens, [int(line['id'])])
 
 class Vectorizer(metaclass=ABCMeta):
-    """Vectorizador de documentos de texto"""
+    """Interfaz de vectorizador de documentos de texto"""
 
     @abstractmethod
     def fit(self):
@@ -53,12 +60,21 @@ class LexicVectorizer(Vectorizer):
     
     Attributes:
         vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+        
         corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
         utiliza en la etapa de entrenamiento del modelo de vectorización.
     """
 
     def __init__(self, vectorWriter, corpusReader=None):
-        """Inicializa el vectorizador léxico"""
+        """
+        Inicializa el vectorizador léxico
+        
+        Args:
+            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+        
+            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
+            utiliza en la etapa de entrenamiento del modelo de vectorización.
+        """
 
         self.__model = LexicModel()
         self.__vectorWriter = vectorWriter
@@ -72,7 +88,7 @@ class LexicVectorizer(Vectorizer):
     @model.setter
     def model(self, inputPath):
         """
-        Estabece un modelo de vectorización pre-entrnado.
+        Estabece un modelo de vectorización pre-entrenado.
         
         Args:
             inputPath (str): Ruta del modelo a cargar.
@@ -130,9 +146,9 @@ class LexicVectorizer(Vectorizer):
 
         Args:
             CorpusReader (CorpusReader): Lector de documentos de texto. 
-                Se utiliza en la etapa de pruebas. En caso de no espeficicar uno
-                se hace uso del mismo lector de la etapa de entrenamiento ingresada
-                en el constructor.                
+            Se utiliza en la etapa de pruebas. En caso de no especificar uno
+            se hace uso del mismo lector de la etapa de entrenamiento ingresada
+            en el constructor.                
         """
 
         gen = self.__corpusReader.getBatch() if corpusReader is None else corpusReader.getBatch()
@@ -149,7 +165,12 @@ class LexicVectorizer(Vectorizer):
             self.__vectorWriter.addPreprocessedBatch((batch[0], vectors))
     
     def saveModel(self, outputPath):
-        """Guarda el modelo de vectorización de documentos entrenado."""
+        """
+        Guarda el modelo de vectorización de documentos entrenado.
+
+        Args:
+            outputPath (str): Ruta del archivo de salida.
+        """
 
         self.__model.save(outputPath)
 
@@ -177,17 +198,38 @@ class SemanticVectorizer(Vectorizer):
     
     Attributes:
         vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
         corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            especifica en la etapa de entrenamiento del modelo de vectorización.
+        especifica en la etapa de entrenamiento del modelo de vectorización.
         vectorSize (int): Numero de dimensiones de los vectores de características
-            de salida.
+        de salida.
+
         minCount (int): Número mínimo de aparición de una palabra para ser considerada
-            en el entrenamiento.
+        en el entrenamiento.
+
         epochs (int): Número de iteraciones en las que se entrenará
-            el modelo de vectorización.
+        el modelo de vectorización.
     """
 
     def __init__(self, vectorWriter, corpusReader=None, vectorSize=50, minCount=1, epochs=10):
+        """
+        Inicializa el vectorizador semántico.
+
+        Args:
+            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
+            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
+            especifica en la etapa de entrenamiento del modelo de vectorización.
+            
+            vectorSize (int): Numero de dimensiones de los vectores de características
+            de salida.
+
+            minCount (int): Número mínimo de aparición de una palabra para ser considerada
+            en el entrenamiento.
+
+            epochs (int): Número de iteraciones en las que se entrenará
+            el modelo de vectorización.
+        """
         self.__model = Doc2Vec(vector_size=vectorSize, min_count=minCount, epochs=epochs)
         self.__vectorWriter = vectorWriter
         self.__corpusReader = corpusReader
@@ -228,9 +270,9 @@ class SemanticVectorizer(Vectorizer):
 
         Args:
             CorpusReader (CorpusReader): Lector de documentos de texto. 
-                Se utiliza en la etapa de pruebas. En caso de no espeficicar uno
-                se hace uso del mismo lector de la etapa de entrenamiento ingresada
-                en el constructor.
+            Se utiliza en la etapa de pruebas. En caso de no especificar uno
+            se hace uso del mismo lector de la etapa de entrenamiento ingresada
+            en el constructor.
         """
 
         cr = self.__corpusReader if corpusReader is None else corpusReader
@@ -242,6 +284,13 @@ class SemanticVectorizer(Vectorizer):
             self.__vectorWriter.addPreprocessedBatch(batch)        
 
     def saveModel(self, outputPath):
+        """
+        Guarda el modelo de vectorización de documentos entrenado.
+
+        Args:
+            outputPath (str): Ruta del archivo de salida.
+        """
+
         self.__model.save(outputPath)
 
 class VectorizerAbstractFactory(metaclass=ABCMeta):
@@ -270,6 +319,7 @@ class VectorizerFactory(VectorizerAbstractFactory):
 
         Args:
             vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
             corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
             utiliza en la etapa de entrenamiento del modelo de vectorización.
         
@@ -289,14 +339,18 @@ class VectorizerFactory(VectorizerAbstractFactory):
 
         Args:
             vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
             corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-                especifica en la etapa de entrenamiento del modelo de vectorización.
+            especifica en la etapa de entrenamiento del modelo de vectorización.
+
             vectorSize (int): Numero de dimensiones de los vectores de características
-                de salida.
+            de salida.
+
             minCount (int): Número mínimo de aparición de una palabra para ser considerada
-                en el entrenamiento.
+            en el entrenamiento.
+
             epochs (int): Número de iteraciones en las que se entrenará
-                el modelo de vectorización.
+            el modelo de vectorización.
 
         Returns:
             SemanticVectorizer
@@ -311,14 +365,18 @@ class VectorizerFactory(VectorizerAbstractFactory):
 
         Args:
             vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
             corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-                especifica en la etapa de entrenamiento del modelo de vectorización.
+            especifica en la etapa de entrenamiento del modelo de vectorización.
+
             vectorSize (int): Numero de dimensiones de los vectores de características
-                de salida.
+            de salida.
+
             minCount (int): Número mínimo de aparición de una palabra para ser considerada
-                en el entrenamiento.
+            en el entrenamiento.
+
             epochs (int): Número de iteraciones en las que se entrenará
-                el modelo de vectorización.
+            el modelo de vectorización.
 
         Returns:
             SemanticVectorizer

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>layerConsolidation module &mdash; documentación de Spectral Text Representation - 0.1</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="preProcessing module" href="preProcessing.html" />
+    <link rel="prev" title="featureExtraction module" href="featureExtraction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Spectral Text Representation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">spectraltrep</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="featureExtraction.html">featureExtraction module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">layerConsolidation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preProcessing.html">preProcessing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spaceUnification.html">spaceUnification module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Spectral Text Representation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">spectraltrep</a> &raquo;</li>
+      <li>layerConsolidation module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/layerConsolidation.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-layerConsolidation">
+<span id="layerconsolidation-module"></span><h1>layerConsolidation module<a class="headerlink" href="#module-layerConsolidation" title="Enlazar permanentemente con este título"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="layerConsolidation.Assembler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">layerConsolidation.</span></span><span class="sig-name descname"><span class="pre">Assembler</span></span><a class="headerlink" href="#layerConsolidation.Assembler" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Ensamblador de espectros de contenido</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="layerConsolidation.Assembler.assemble">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">assemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">spectra</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.Assembler.assemble" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Ensambla cada uno de los espectros de contenido en una sola matriz por documento.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="layerConsolidation.Reader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">layerConsolidation.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><a class="headerlink" href="#layerConsolidation.Reader" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Lector de espectros de contenido.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="layerConsolidation.Reader.readSpectra">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">readSpectra</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.Reader.readSpectra" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Lee un espectro de contenido del archivo de entrada.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="layerConsolidation.SpectraAssembler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">layerConsolidation.</span></span><span class="sig-name descname"><span class="pre">SpectraAssembler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.SpectraAssembler" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#layerConsolidation.Assembler" title="layerConsolidation.Assembler"><code class="xref py py-class docutils literal notranslate"><span class="pre">layerConsolidation.Assembler</span></code></a></p>
+<p>Ensamblador de espectros de contenido.</p>
+<p>Permite unificar los espectros de las diferentes características de un corpus.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>outputPath (str): Ruta del archivo de salida que contendrá los espectros ensamblados.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="layerConsolidation.SpectraAssembler.assemble">
+<span class="sig-name descname"><span class="pre">assemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">spectra</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.SpectraAssembler.assemble" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Ensambla cada uno de los espectros de contenido en una sola matriz por documento.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>spectra (str): Cada parámetro será la ruta del archivo donde 
+se encuentra la información de cada spectro.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="layerConsolidation.SpectraReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">layerConsolidation.</span></span><span class="sig-name descname"><span class="pre">SpectraReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.SpectraReader" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#layerConsolidation.Reader" title="layerConsolidation.Reader"><code class="xref py py-class docutils literal notranslate"><span class="pre">layerConsolidation.Reader</span></code></a></p>
+<p>Lector de espectros de contenido.</p>
+<p>Permite cargar el espectro del Corpus línea por línea.</p>
+<dl>
+<dt>Attributes:</dt><dd><p>inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
+con el siguiente formato:</p>
+<blockquote>
+<div><p>{«id»: idDelDocumento, «spectre»: espectroDelDocumento}
+…</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="layerConsolidation.SpectraReader.readSpectra">
+<span class="sig-name descname"><span class="pre">readSpectra</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#layerConsolidation.SpectraReader.readSpectra" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Lee un espectro de contenido del archivo de entrada.</p>
+<dl class="simple">
+<dt>Yields:</dt><dd><p>(int, lista bidimensional de tipo double): El id y su spectro correspondiente.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="featureExtraction.html" class="btn btn-neutral float-left" title="featureExtraction module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="preProcessing.html" class="btn btn-neutral float-right" title="preProcessing module" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2022, Melesio Crespo, Jorge Cortés, Karla Salas.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

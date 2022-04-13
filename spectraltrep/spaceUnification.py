@@ -24,10 +24,10 @@ class VectorReader(Reader):
 
     Attributes:
         inputPath (str): Ruta del archivo de entrada. Este archivo debe ser un jsonl
-            con el siguiente foramto:
+        con el siguiente formato:
 
-                {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
-                ...
+            {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
+            ...
 
         numLines (int): Número de líneas en el archivo de entrada.
     """
@@ -38,10 +38,10 @@ class VectorReader(Reader):
 
         Args:
             inputPath (str): Ruta del archivo de entrada. Este archivo debe ser un jsonl
-                con el siguiente foramto:
+            con el siguiente formato:
 
-                {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
-                ...
+            {"id": idDelDocumento, "vector": vectorDeCaracterísticas}
+            ...
         """
         self.__inputPath = inputPath
         self.__numLines = 0
@@ -98,6 +98,7 @@ class Projector:
 
     Attributes:
         netLength (int): Número de dimensiones del espectro a obtener (netLength * netLength).
+
         model (MiniSOM): Modelo de mapas auto-organizados.
     """
 
@@ -107,7 +108,9 @@ class Projector:
         
         Args:
             netLength (int): Número de dimensiones del espectro a obtener (netLength * netLength).
+
             numDimensions (int): Número de dimensiones de los vectores de entrada.
+
             learningRate (float): Taza de aprendizaje para el SOM.
         """
 
@@ -121,7 +124,8 @@ class Projector:
 
         Args:
             featureVectors (numpy.ndarray): Conjunto de vectores de características
-                para realizar el entrenamiento.
+            para realizar el entrenamiento.
+
             epochs (int): Número de iteraciones en las que se realizará el entrenamiento.
         """
 
@@ -135,9 +139,10 @@ class Projector:
 
         Args:
             featureVectors (numpy.ndarray): Conjunto de vectores de características
-                a proyectar.
+            a proyectar.
+
             documentSink (DocumentSink): Recolector de vectores proyectados. En caso de
-                que no se proveea uno se devuelve una matriz de proyecciones.
+            que no se proveea uno se devuelve una matriz de proyecciones.
         
         Returns:
             Matriz de proyecciones en caso de que no se proveea un reclector
