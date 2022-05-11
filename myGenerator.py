@@ -4,14 +4,13 @@ import tensorflow as tf
 class DataGenerator(tf.keras.utils.Sequence):
     'Generates data for Keras'
     def __init__(self, list_IDs, instances, labels, spectra, batch_size=32, dim=(1200,),
-                 n_classes=2, shuffle=True):
+                 shuffle=True):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
         self.labels = labels
         self.list_IDs = list_IDs
         self.instances = instances
-        self.n_classes = n_classes
         self.spectra = spectra
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -40,24 +39,28 @@ class DataGenerator(tf.keras.utils.Sequence):
             np.random.shuffle(self.indexes)
 
     def __get_pair(self, id):
-            pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
 
-            return pair_spectra[0].flatten(), pair_spectra[1].flatten()
+        pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
+        x1 = pair_spectra[0].flatten()
+        x2 = pair_spectra[1].flatten()
+        
+        return x1, x2 
             
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim)
         # Initialization
-        X = np.empty((self.batch_size, 2, *self.dim))
+        X1 = np.empty((self.batch_size, *self.dim))
+        X2 = np.empty((self.batch_size, *self.dim))
         y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             pair = self.__get_pair(ID)
-            X[i,0] = pair[0]
-            X[i,1] = pair[1]
+            X1[i,] = pair[0]
+            X2[i,] = pair[1]
 
             # Store class
             y[i] = self.labels[ID]
 
-        return X, y
+        return (X1,X2), y
