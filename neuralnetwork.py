@@ -1,4 +1,5 @@
 import json
+import linecache
 import pickle
 from tensorflow import keras
 import tensorflow as tf
@@ -7,7 +8,7 @@ import numpy as np
 
 class corpusGenerator(keras.utils.Sequence):
     
-    def __init__(self, corpus_set, truth_set,dim, option_test, 
+    def __init__(self, corpus_set, truth_set, dim, option_test, 
                 batch_size=32,):
         # 'Initialization'
         self.corpus_set = corpus_set
@@ -16,15 +17,14 @@ class corpusGenerator(keras.utils.Sequence):
         self.dim = dim
         self.option_test = option_test
         self.indexes = np.arange(len(self.corpus_set))
-        PATH = './pan22-authorship-verification-training-dataset/particionesXid/FullSpectra.jsonl'
-        self.spectre = open(PATH,'rb')
+        self.path = r'./pan22-authorship-verification-training-dataset/particionesXid/FullSpectra.jsonl'
 
     def generate_truth(self, truth_set):
         aux = {}
         with open(truth_set) as infile:
             for line in infile:
                 val = json.loads(line)
-                aux[val["id"]] = val["value"]
+                aux[val["id"]] = int(val["value"])
         return aux
 
     def __len__(self):
@@ -41,13 +41,13 @@ class corpusGenerator(keras.utils.Sequence):
         return X, y
 
     # Prueba 1: Flatten y Concatenación de vectores.
-    def test_1(self, s1, s2):
+    def test1(self, s1, s2):
         s1 = s1.flatten()
         s2 = s2.flatten()
         return np.concatenate([s1,s2])
 
     # Prueba 2: Resta de matrices y flatten.
-    def test_2(self,s1, s2):
+    def test2(self,s1, s2):
         aux = s1 - s2
         return aux.flatten()
 
@@ -56,8 +56,7 @@ class corpusGenerator(keras.utils.Sequence):
         return np.exp(aux)/np.sum(np.exp(aux))
     
     def get_spectre(self, id):
-        self.spectre.seek(id+1)
-        spectre = self.spectre.readline()
+        spectre = linecache.getline(self.path, id+1)
         spectre = json.loads(spectre)
         return np.array(spectre["spectra"])
 
@@ -65,71 +64,79 @@ class corpusGenerator(keras.utils.Sequence):
         'Generates data containing batch_size samples' 
         # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.array((self.batch_size/2, *self.dim))
-        y = np.array((self.batch_size/2), dtype=int)
+        ln = self.batch_size//2
+        X = np.empty([ln, self.dim])
+        y = np.empty(ln)
 
         # Generate data
-        for i in range(0,len(list_temp),2):
+        for i in range(0,ln):
+            j = i*2
             # Espectro del documento
-            s1 = self.get_spectre(list_temp[i].idtext)
-            s2 = self.get_spectre(list_temp[i+1].idtext)
+            s1 = self.get_spectre(list_temp.iloc[j]['idtext'])
+            s2 = self.get_spectre(list_temp.iloc[j+1]['idtext'])
 
-            if self.op == 1: 
-                X[i,] = self.test_1(s1, s2)
+            if self.option_test == 1: 
+                X[i,] = self.test1(s1, s2)
             else:
-                X[i,] = self.test_2(s1, s2)
-                if self.op == 3:
+                X[i,] = self.test2(s1, s2)
+                if self.option_test == 3:
                     X[i,] = self.softmax(X[i,])
 
             # Verdad del conjunto de problemas
-            y[i] = self.labels[list_temp[i].id]
+            y[i] = self.truth_set[list_temp.iloc[j]['id']]
 
-        return X, keras.utils.to_categorical(y, num_classes=1)
+        return X, keras.utils.to_categorical(y)
 
 class NeuralNetworkMLPNN:
     def __init__(self,train, truth_train, val, truth_val, op=1):
-        self.trains = train
+        self.trains = self.readInfo(train)
         self.truth_train = truth_train
-        self.val = val
+        self.val = self.readInfo(val)
         self.truth_val = truth_val
         self.op = op
-        self.size = (1200,) if op == 2 else (2400,)
-        self.model = self.create_model()
+        self.size = 1200 if op == 2 else 2400
+        self.model = self.createModel()
 
     def train(self, epochs=100):
         # Generators
-        training_generator = corpusGenerator(self.trains, self.truth_train, self.op, dim=self.size)
-        validation_generator = corpusGenerator(self.val, self.truth_val, self.op, dim=self.size)
+        training_generator = corpusGenerator(self.trains, self.truth_train, self.size, self.op)
+        validation_generator = corpusGenerator(self.val, self.truth_val, self.size, self.op)
         # Train model on dataset with generator.
         self.model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
                     workers=6,epochs=epochs)
 
-    def create_model(self):
+    def createModel(self):
         model = tf.keras.Sequential([
-            tf.keras.layers(input_shape=self.size),
+            tf.keras.layers.InputLayer(input_shape=self.size),
             tf.keras.layers.Dense(600, activation='relu'),
             tf.keras.layers.Dropout(0.4),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
         model.compile(optimizer='adam',
-              loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              loss=tf.keras.losses.BinaryCrossentropy(),
               metrics=['accuracy'])
-
+        print(model.summary())
         return model
+    
+    def save(self, path):
+        return self.model.predict(path)
 
-def read_info(path):
-    infile = open(path,'rb')
-    file = pickle.load(infile)
-    infile.close()
-    return file
+    def readInfo(self, path):
+        infile = open(path,'rb')
+        file = pickle.load(infile)
+        infile.close()
+        return file
 
 if __name__ == "__main__":
     pXid = './pan22-authorship-verification-training-dataset/particionesXid/'
     p = './pan22-authorship-verification-training-dataset/particiones/'
-    test = NeuralNetworkMLPNN(read_info(pXid+"PanTrain.plk"), 
+    test = NeuralNetworkMLPNN(pXid+"PanTrain.plk", 
                               p+"train_truth.jsonl",
-                              read_info(pXid+"PanVal.plk"), 
+                              pXid+"PanVal.plk", 
                               p+"val_truth.jsonl", op=2)
     test.train()
+    test.save('./model2022/test2.h5')
+
+
