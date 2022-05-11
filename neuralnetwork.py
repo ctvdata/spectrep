@@ -85,7 +85,7 @@ class corpusGenerator(keras.utils.Sequence):
             # Verdad del conjunto de problemas
             y[i] = self.truth_set[list_temp.iloc[j]['id']]
 
-        return X, keras.utils.to_categorical(y)
+        return X, keras.utils.to_categorical(y, num_classes=2)
 
 class NeuralNetworkMLPNN:
     def __init__(self,train, truth_train, val, truth_val, op=1):
@@ -112,7 +112,7 @@ class NeuralNetworkMLPNN:
             tf.keras.layers.InputLayer(input_shape=self.size),
             tf.keras.layers.Dense(600, activation='relu'),
             tf.keras.layers.Dropout(0.4),
-            tf.keras.layers.Dense(1, activation='sigmoid')
+            tf.keras.layers.Dense(2, activation='sigmoid')
         ])
         model.compile(optimizer='adam',
               loss=tf.keras.losses.BinaryCrossentropy(),
