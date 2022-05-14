@@ -137,7 +137,7 @@ def layerConsolidation(lexInput, synInput, semInput, output):
     assembler = SpectraAssembler(output)
     assembler.assemble(lexInput, synInput, semInput)
 
-    del(assembler, path)
+    del(assembler)
 
     print("Ensamble terminado")
 
