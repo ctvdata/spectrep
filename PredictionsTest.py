@@ -73,17 +73,17 @@ if __name__ == "__main__":
                             cfg['tmp'] + '/FullSpectra.jsonl')
 
     # Clasificacion
-
-    print("Realizando predicciones")
-    params = {'dim': (1200,),
-            'batch_size': 32}
+    print("Cargando modelo")
+    model = load_model(cfg['Classifier'])
 
     test = pd.read_pickle("pan22-authorship-verification-training-dataset/particionesXid/PanTest.plk")
     full_spectra = spectraLoader(cfg['tmp'] + '/FullSpectra.jsonl')
     list_IDs = test.id.unique().tolist()
 
-    x = TestGenerator(list_IDs, test, full_spectra)
-    model = load_model(cfg['Classifier'])
+    print("Realizando predicciones")
+    params = {'dim': (1200,),
+            'batch_size': 32}
+    x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
 
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
