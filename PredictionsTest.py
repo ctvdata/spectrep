@@ -76,7 +76,7 @@ if __name__ == "__main__":
     print("Cargando modelo")
     model = load_model(cfg['Classifier'])
 
-    test = pd.read_pickle("pan22-authorship-verification-training-dataset/particionesXid/PanTest.plk")
+    test = pd.read_pickle(cfg['tmp'] + "/PanTest.plk")
     full_spectra = spectraLoader(cfg['tmp'] + '/FullSpectra.jsonl')
     list_IDs = test.id.unique().tolist()
 
