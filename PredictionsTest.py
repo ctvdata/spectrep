@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from myGenerator import TestGenerator
 from keras.models import load_model
+from CustomLayers import ResidualLayer, AbsoluteResidual
 
 def spectraLoader(inputPath: str) -> pd.DataFrame:
     df = pd.DataFrame()
@@ -74,7 +75,7 @@ if __name__ == "__main__":
 
     # Clasificacion
     print("Cargando modelo")
-    model = load_model(cfg['Classifier'])
+    model = load_model(cfg['Classifier'], custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
 
     test = pd.read_pickle(cfg['tmp'] + "/PanTest.plk")
     full_spectra = spectraLoader(cfg['tmp'] + '/FullSpectra.jsonl')
