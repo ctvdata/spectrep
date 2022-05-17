@@ -75,7 +75,8 @@ if __name__ == "__main__":
 
     # Clasificacion
     print("Cargando modelo")
-    model = load_model(cfg['Classifier'], custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
+    model = load_model(cfg['Classifier'])#, custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
+    # model = load_model("models/SiameseNetwork.h5", custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
 
     test = pd.read_pickle(cfg['tmp'] + "/PanTest.plk")
     full_spectra = spectraLoader(cfg['tmp'] + '/FullSpectra.jsonl')
@@ -89,5 +90,6 @@ if __name__ == "__main__":
 
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
         for id, prediction in zip(list_IDs, predictions):
-            answer = {"id": id, "value":prediction}
+            # pdb.set_trace()
+            answer = {"id": id, "value":str(prediction[0])}
             f.write(json.dumps(answer) + "\n")
