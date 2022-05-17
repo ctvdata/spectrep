@@ -1,0 +1,10 @@
+{
+    "tmp": "tmp",
+    "LexicVectorizer": "models/lexicModel.json",
+    "SyntacticVectorizer": "models/dv2SynModel",
+    "SemanticVectorizer": "models/dv2SemModel",
+    "LexicProjector": "models/LexicModel.som",
+    "SyntacticProjector": "models/SyntacticModel.som",
+    "SemanticProjector": "models/SemanticModel.som",    
+    "Classifier": "models/SiameseNetwork"
+}
