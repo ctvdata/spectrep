@@ -1,3 +1,4 @@
+outputs/*
 __pycache__/*
 minisom/__pycache__/*
 spectraltrep/__pycache__/*
