@@ -9,7 +9,8 @@ nltk.download('omw-1.4')
 nltk.download('averaged_perceptron_tagger')
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize  
+# from nltk.tokenize import word_tokenize  
+from nltk.tokenize import RegexpTokenizer
 import re
 from nltk.stem import WordNetLemmatizer
 wordnet.ensure_loaded()
@@ -58,16 +59,21 @@ class LexicPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
        
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
-        self.__stop_words = set(stopwords.words('english'))
-        self.__wordnet_lemmatizer = WordNetLemmatizer()
+        # self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
+        # self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
+        # self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
+        # self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
+        # self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
+        # self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
+        # self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
+        # self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        # self.__stop_words = set(stopwords.words('english'))
+        # self.__wordnet_lemmatizer = WordNetLemmatizer()
+
+        # Funciones agregadas para RegexpTokenizer
+        self.__exp1 = re.compile('><')
+        self.__exp2 = re.compile('<')
+        self.__exp3 = re.compile('>')
     
     def preProcess(self, text):
         """
@@ -81,19 +87,26 @@ class LexicPreprocessor(Preprocessor, Thread):
         """
 
         text = text.lower()
-        text = self.__DELETE_NEW_LINE.sub("", text)
-        text = self.__DELETE_MIDSCORE.sub(" ", text)
-        text = self.__DELETE_PARENTHESES.sub("", text)    
-        text = self.__DELETE_BRACKETS.sub("", text)    
-        text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
-        text = self.__DELETE_QM.sub("", text)
-        text = self.__DELETE_PUNCTUATION.sub('', text)
-        text = self.__REPLACE_DIGITS.sub('<NUM>', text)
-        
-        word_tokens = word_tokenize(text)
-        text = [w for w in word_tokens if not w in self.__stop_words]
-        text = [self.__wordnet_lemmatizer.lemmatize(w) for w in text]
-        
+        # text = self.__DELETE_NEW_LINE.sub("", text)
+        # text = self.__DELETE_MIDSCORE.sub(" ", text)
+        # text = self.__DELETE_PARENTHESES.sub("", text)    
+        # text = self.__DELETE_BRACKETS.sub("", text)    
+        # text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
+        # text = self.__DELETE_QM.sub("", text)
+        # text = self.__DELETE_PUNCTUATION.sub('', text)
+        # text = self.__REPLACE_DIGITS.sub('<NUM>', text)
+                
+        # word_tokens = word_tokenize(text)
+        # text = [w for w in word_tokens if not w in self.__stop_words]
+        # text = [self.__wordnet_lemmatizer.lemmatize(w) for w in text]
+
+        # Agregado para usar RegexpTokenizer
+        text = self.__exp1.sub("> <", text)
+        text = self.__exp2.sub(" <", text)
+        text = self.__exp3.sub("> ", text)
+        tokenizer = RegexpTokenizer('\w+|<\w*?>|\S+')
+        text = tokenizer.tokenize(text)
+
         text = ' '.join(text)    
         
         return text
@@ -151,14 +164,19 @@ class SyntacticPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
 
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        # self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
+        # self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
+        # self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
+        # self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
+        # self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
+        # self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
+        # self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
+        # self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+
+        # Funciones agregadas para RegexpTokenizer
+        self.__exp1 = re.compile('><')
+        self.__exp2 = re.compile('<')
+        self.__exp3 = re.compile('>')
     
     def preProcess(self, text):
         """
@@ -172,15 +190,23 @@ class SyntacticPreprocessor(Preprocessor, Thread):
         """
 
         text = text.lower()
-        text = self.__DELETE_NEW_LINE.sub("", text)
-        text = self.__DELETE_MIDSCORE.sub(" ", text)
-        text = self.__DELETE_PARENTHESES.sub("", text)    
-        text = self.__DELETE_BRACKETS.sub("", text)    
-        text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
-        text = self.__DELETE_QM.sub("", text)
-        text = self.__DELETE_PUNCTUATION.sub('', text)
-        text = self.__REPLACE_DIGITS.sub('<NUM>', text)
-        text = word_tokenize(text)
+        # text = self.__DELETE_NEW_LINE.sub("", text)
+        # text = self.__DELETE_MIDSCORE.sub(" ", text)
+        # text = self.__DELETE_PARENTHESES.sub("", text)    
+        # text = self.__DELETE_BRACKETS.sub("", text)    
+        # text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
+        # text = self.__DELETE_QM.sub("", text)
+        # text = self.__DELETE_PUNCTUATION.sub('', text)
+        # text = self.__REPLACE_DIGITS.sub('<NUM>', text)
+        # text = word_tokenize(text)
+
+        # Agregado para usar RegexpTokenizer
+        text = self.__exp1.sub("> <", text)
+        text = self.__exp2.sub(" <", text)
+        text = self.__exp3.sub("> ", text)
+        tokenizer = RegexpTokenizer('\w+|<\w*?>|\S+')
+        text = tokenizer.tokenize(text)
+
         text = nltk.pos_tag(text)
         text = ' '.join([t[1] for t in text])    
         
@@ -228,15 +254,20 @@ class SemanticPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
             
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
-        self.__stop_words = set(stopwords.words('english'))
+        # self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
+        # self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
+        # self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
+        # self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
+        # self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
+        # self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
+        # self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
+        # self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        # self.__stop_words = set(stopwords.words('english'))
+
+        # Funciones agregadas para RegexpTokenizer
+        self.__exp1 = re.compile('><')
+        self.__exp2 = re.compile('<')
+        self.__exp3 = re.compile('>')
     
     def preProcess(self, text):
         """
@@ -249,17 +280,23 @@ class SemanticPreprocessor(Preprocessor, Thread):
         """
 
         text = text.lower()
-        text = self.__DELETE_NEW_LINE.sub("", text)
-        text = self.__DELETE_MIDSCORE.sub(" ", text)
-        text = self.__DELETE_PARENTHESES.sub("", text)    
-        text = self.__DELETE_BRACKETS.sub("", text)    
-        text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
-        text = self.__DELETE_QM.sub("", text)
-        text = self.__DELETE_PUNCTUATION.sub('', text)
-        text = self.__REPLACE_DIGITS.sub('<NUM>', text)
+        # text = self.__DELETE_NEW_LINE.sub("", text)
+        # text = self.__DELETE_MIDSCORE.sub(" ", text)
+        # text = self.__DELETE_PARENTHESES.sub("", text)    
+        # text = self.__DELETE_BRACKETS.sub("", text)    
+        # text = self.__REPLACE_DOUBLE_SPACE.sub(" ", text)   
+        # text = self.__DELETE_QM.sub("", text)
+        # text = self.__DELETE_PUNCTUATION.sub('', text)
+        # text = self.__REPLACE_DIGITS.sub('<NUM>', text)
         
-        word_tokens = word_tokenize(text)
-        text = [w for w in word_tokens if not w in self.__stop_words]
+        # word_tokens = word_tokenize(text)
+        # text = [w for w in word_tokens if not w in self.__stop_words]
+        text = self.__exp1.sub("> <", text)
+        text = self.__exp2.sub(" <", text)
+        text = self.__exp3.sub("> ", text)
+        tokenizer = RegexpTokenizer('\w+|<\w*?>|\S+')
+        text = tokenizer.tokenize(text)
+        
         text = ' '.join(text)
         
         return text

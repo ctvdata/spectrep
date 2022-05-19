@@ -7,6 +7,7 @@ import numpy as np
 from myGenerator import TestGenerator
 from keras.models import load_model
 from CustomLayers import ResidualLayer, AbsoluteResidual
+import pdb
 
 def spectraLoader(inputPath: str) -> pd.DataFrame:
     df = pd.DataFrame()
@@ -84,12 +85,11 @@ if __name__ == "__main__":
 
     print("Realizando predicciones")
     params = {'dim': (1200,),
-            'batch_size': 32}
+            'batch_size': 107}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
 
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
         for id, prediction in zip(list_IDs, predictions):
-            # pdb.set_trace()
-            answer = {"id": id, "value":str(prediction[0])}
+            answer = {"id": id, "value":prediction[0].item()}
             f.write(json.dumps(answer) + "\n")
