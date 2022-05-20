@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import pdb
 
 class DataGenerator(tf.keras.utils.Sequence):
     'Generates data for Keras'
@@ -58,7 +57,6 @@ class DataGenerator(tf.keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             pair = self.__get_pair(ID)
-            pdb.set_trace()
             X1[i,] = pair[0]
             X2[i,] = pair[1]
 

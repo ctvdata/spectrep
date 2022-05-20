@@ -85,11 +85,12 @@ if __name__ == "__main__":
 
     print("Realizando predicciones")
     params = {'dim': (1200,),
-            'batch_size': 107}
+            'batch_size': 1}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
-
+    # pdb.set_trace()
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
         for id, prediction in zip(list_IDs, predictions):
+            # pdb.set_trace()
             answer = {"id": id, "value":prediction[0].item()}
             f.write(json.dumps(answer) + "\n")

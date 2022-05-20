@@ -6,5 +6,5 @@
     "LexicProjector": "models/LexicModel.som",
     "SyntacticProjector": "models/SyntacticModel.som",
     "SemanticProjector": "models/SemanticModel.som",    
-    "Classifier": "models/SiameseNetwork-DUMMY"
+    "Classifier": "models/ClassifierModel-v6"
 }
