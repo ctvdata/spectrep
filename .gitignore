@@ -3,3 +3,5 @@ tests/outputs/*
 simpsom/__pycache__/*
 simpsom/cluster/__pycache__/*
 minisom/__pycache__/*
+outputs/*
+__pycache__/*
