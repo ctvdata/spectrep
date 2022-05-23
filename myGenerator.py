@@ -41,8 +41,10 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __get_pair(self, id):
 
         pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
-        x1 = pair_spectra[0].flatten()
-        x2 = pair_spectra[1].flatten()
+        # x1 = pair_spectra[0].flatten()
+        # x2 = pair_spectra[1].flatten()
+        x1 = pair_spectra[0][1:].flatten() # Modificado para traer solamente capa sintactica y semantica
+        x2 = pair_spectra[1][1:].flatten() # Modificado para traer solamente capa sintactica y semantica
         
         return x1, x2 
             
@@ -96,8 +98,10 @@ class TestGenerator(tf.keras.utils.Sequence):
     def __get_pair(self, id):
 
         pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
-        x1 = pair_spectra[0].flatten()
-        x2 = pair_spectra[1].flatten()
+        # x1 = pair_spectra[0].flatten()
+        # x2 = pair_spectra[1].flatten()
+        x1 = pair_spectra[0][1:].flatten() # Modificado para traer solamente capa sintactica y semantica
+        x2 = pair_spectra[1][1:].flatten() # Modificado para traer solamente capa sintactica y semantica
         
         return x1, x2 
             

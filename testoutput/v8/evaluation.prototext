@@ -1,0 +1,24 @@
+measure {
+ key: "auc"
+ value: "0.52"
+}
+measure {
+ key: "c@1"
+ value: "0.525"
+}
+measure {
+ key: "f_05_u"
+ value: "0.56"
+}
+measure {
+ key: "F1"
+ value: "0.644"
+}
+measure {
+ key: "brier"
+ value: "0.58"
+}
+measure {
+ key: "overall"
+ value: "0.566"
+}
