@@ -5,6 +5,8 @@ import json
 from nltk.tokenize import RegexpTokenizer
 import json
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pickle
 
 class Doc2VecCorpusReader():
     """
@@ -258,7 +260,7 @@ class SemanticVectorizer(Vectorizer):
     
     def fit(self):
         """
-        Entrena un modelo de vectorización léxico de documentos.
+        Entrena un modelo de vectorización semántico de documentos.
         """
 
         try:
@@ -299,6 +301,102 @@ class SemanticVectorizer(Vectorizer):
 
         self.__model.save(outputPath)
 
+class CharBasedVectorizer(Vectorizer):
+    """
+    Vectorizador basado en ngramas de caracteres de documentos de texto.
+    
+    Attributes:
+        vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
+        corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
+        especifica en la etapa de entrenamiento del modelo de vectorización.
+
+        ngramRange (tuple): El límite inferior y superior del rango de valores n para diferentes n-gramas que se extraerán.
+    """
+
+    def __init__(self, vectorWriter, corpusReader=None, ngramRange=(2,2)):
+        """
+        Inicializa el vectorizador semántico.
+
+        Args:
+            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+
+            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
+            especifica en la etapa de entrenamiento del modelo de vectorización.
+            
+            ngramRnge: Tupla de rango de ngramas a considerar. Default unigramas.
+        """
+        self.__model = TfidfVectorizer(analyzer="char", ngram_range=ngramRange)
+        self.__vectorWriter = vectorWriter
+        self.__corpusReader = corpusReader
+
+    @property
+    def model(self):
+        """Modelo de vectorización."""
+        return self.__model
+
+    @model.setter
+    def model(self, inputPath):
+        """
+        Estabece un modelo de vectorización pre-entrnado.
+        
+        Args:
+            inputPath (str): Ruta del modelo a cargar.
+        """
+        self.__model = pickle.load(open(inputPath, 'rb'))
+    
+    def fit(self):
+        """
+        Entrena un modelo de vectorización basado en ngramas de caracteresde documentos.
+        """
+
+        try:
+            if self.__corpusReader is None:
+                raise Exception('No se ha definido un corpus reader en el constructor para el entrenamiento.')
+            else:
+                gen = self.__corpusReader.getBatch()
+                corpus = list()
+                for batch in gen:
+                    for doc in batch[1]:
+                        corpus.append(doc['text'])
+                self.__model.fit(corpus)
+
+        except Exception as err:
+            print(err)
+
+    def transform(self, corpusReader=None):
+        """
+        Tansforma un corpus en un conjunto de vectores basados en ngramas de caracteres.
+
+        Args:
+            CorpusReader (CorpusReader): Lector de documentos de texto. 
+            Se utiliza en la etapa de pruebas. En caso de no especificar uno
+            se hace uso del mismo lector de la etapa de entrenamiento ingresada
+            en el constructor.
+        """
+
+        gen = self.__corpusReader.getBatch() if corpusReader is None else corpusReader.getBatch()
+
+        for batch in gen:
+            vectors = []
+
+            for t in batch[1]:
+                print(f"Vectorizando documento {t['id']}", end='\r')
+                v = dict()
+                v['id'] = t['id']
+                v['vector'] = np.array(self.__model.transform([t['text']]).todense())[0]
+                vectors.append(v)
+            self.__vectorWriter.addPreprocessedBatch((batch[0], vectors))
+
+    def saveModel(self, outputPath):
+        """
+        Guarda el modelo de vectorización de documentos entrenado.
+
+        Args:
+            outputPath (str): Ruta del archivo de salida.
+        """
+        pickle.dump(self.__model, open(outputPath, 'wb'))
+
 class VectorizerAbstractFactory(metaclass=ABCMeta):
     """Fabrica abstracta de vectorizadores."""
     @abstractmethod
@@ -314,6 +412,11 @@ class VectorizerAbstractFactory(metaclass=ABCMeta):
     @abstractmethod
     def createSemanticVectorizer(self):
         """Crea un vectorizador semántico."""
+        pass
+
+    @abstractmethod
+    def createCharBasedVectorizer(self):
+        """Crea un vectorizador basado en ngramas de caracteres."""
         pass
 
 class VectorizerFactory(VectorizerAbstractFactory):
@@ -388,6 +491,10 @@ class VectorizerFactory(VectorizerAbstractFactory):
             SemanticVectorizer
         """
         return SemanticVectorizer(vectorWriter, corpusReader, vectorSize, minCount, epochs)
+    
+    def createCharBasedVectorizer(self, vectorWriter, corpusReader, ngramRange):
+        """Crea un vectorizador basado en ngramas de caracteres."""
+        return CharBasedVectorizer(vectorWriter, corpusReader, ngramRange)
 
 class LexicModel():
     """
