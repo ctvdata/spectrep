@@ -84,7 +84,7 @@ if __name__ == "__main__":
     list_IDs = test.id.unique().tolist()
 
     print("Realizando predicciones")
-    params = {'dim': (800,), #Cambiado para usar solamente capa sintactica y semantica
+    params = {'dim': (1200,), #Cambiado para usar solamente capa sintactica y semantica
             'batch_size': 1}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
@@ -92,5 +92,5 @@ if __name__ == "__main__":
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
         for id, prediction in zip(list_IDs, predictions):
             # pdb.set_trace()
-            answer = {"id": id, "value":prediction[0].item()}
+            answer = {"id": id, "value":prediction.item()}
             f.write(json.dumps(answer) + "\n")
