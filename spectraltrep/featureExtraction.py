@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import json
-from nltk.tokenize import word_tokenize
+# from nltk.tokenize import word_tokenize
+from nltk.tokenize import RegexpTokenizer
 import json
 import numpy as np
 
@@ -24,12 +25,14 @@ class Doc2VecCorpusReader():
         """
         
         self.__inputPath = inputPath
+        self.__tokenizer = RegexpTokenizer('\w+|<\w*?>|\S+')
 
     def __iter__(self):        
         with open(self.__inputPath) as f:
             for line in f:
                 line = json.loads(line)
-                tokens = word_tokenize(line['text'])
+                # tokens = word_tokenize(line['text'])
+                tokens = self.__tokenizer.tokenize(line['text'])
                 yield TaggedDocument(tokens, [int(line['id'])])
 
 class Vectorizer(metaclass=ABCMeta):
@@ -79,6 +82,7 @@ class LexicVectorizer(Vectorizer):
         self.__model = LexicModel()
         self.__vectorWriter = vectorWriter
         self.__corpusReader = corpusReader
+        self.__tokenizer = RegexpTokenizer('\w+|<\w*?>|\S+')
 
     @property
     def model(self):
@@ -110,7 +114,8 @@ class LexicVectorizer(Vectorizer):
                 for batch in gen:
                     for doc in batch[1]:
                         print(f"Entrenando con doc {doc['id']}", end='\r')
-                        doc = word_tokenize(doc['text'])
+                        # doc = word_tokenize(doc['text'])
+                        doc = self.__tokenizer.tokenize(doc['text'])
                         for token in doc:
                             self.__model.addToken(token)
                 self.__model.setToken2Id()
@@ -124,7 +129,8 @@ class LexicVectorizer(Vectorizer):
 
         #Inicializamos diccionario de frecuencias de palabras en el documento
         docTokensFreq = dict()
-        tokens = word_tokenize(text)
+        # tokens = word_tokenize(text)
+        tokens = self.__tokenizer.tokenize(text)
         docTotalTokens = len(tokens)
 
         # Realizamos el conteo de frecuencias

@@ -5,3 +5,5 @@ simpsom/cluster/__pycache__/*
 minisom/__pycache__/*
 outputs/*
 __pycache__/*
+tmp/*
+model2022/

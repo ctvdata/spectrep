@@ -1,3 +1,6 @@
+from collections import defaultdict
+import pickle
+from matplotlib.font_manager import json_dump
 import numpy as np
 from abc import ABCMeta
 from abc import abstractmethod
@@ -151,3 +154,33 @@ class LockedIterator(object):
     def __next__(self):
         with self.__lock:
             return next(self.__it, '<EOC>')
+
+
+def get_discourse_types():
+    discourse_types = defaultdict()
+    path = "../pan22-authorship-verification-training-dataset/pan22-authorship-verification-training.jsonl"
+    with open(path, 'r') as file:
+        for line in file:
+            val = json.loads(line)
+            for i, text in enumerate(val["pair"]):
+                discourse_types[text] = val["discourse_types"][i]
+    pickle.dump(discourse_types, open("../pan22-authorship-verification-training-dataset/particionesXid/discourse_types.pkl", "wb"))
+
+def set_discourse_types(path):
+    new = ""
+    with open("../pan22-authorship-verification-training-dataset/particionesXid/discourse_types.pkl", "rb") as f:
+        discourse_types = pickle.load(f)
+        with open(path, 'r') as file:
+            for line in file:
+                val = json.loads(line)
+                for i, text in enumerate(val["pair"]):
+                    val["discourse_type"][i] = discourse_types[text]  
+                new += json.dumps(val) + "\n"
+        with open(path, 'w') as file:
+            file.write(new)
+
+#path = "../pan22-authorship-verification-training-dataset/particiones/"
+#get_discourse_types()
+#set_discourse_types(path + "train.jsonl")
+#set_discourse_types(path + "test.jsonl")
+#set_discourse_types(path + "val.jsonl")

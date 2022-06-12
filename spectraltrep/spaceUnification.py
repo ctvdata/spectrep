@@ -165,7 +165,8 @@ class Projector:
             i=i+1
         
         result_matrix = np.array(result_matrix)
-        result_matrix = 255.9 * (result_matrix - result_matrix.min()) / (result_matrix.max() - result_matrix.min())
+        # result_matrix = 255.9 * (result_matrix - result_matrix.min()) / (result_matrix.max() - result_matrix.min())
+        result_matrix = (result_matrix - result_matrix.min()) / (result_matrix.max() - result_matrix.min()) #Solamente valores en el rango [0,1]
 
         print("100% Complete", end='\r')
         

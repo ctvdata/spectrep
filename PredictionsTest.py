@@ -7,6 +7,7 @@ import numpy as np
 from myGenerator import TestGenerator
 from keras.models import load_model
 from CustomLayers import ResidualLayer, AbsoluteResidual
+import pdb
 
 def spectraLoader(inputPath: str) -> pd.DataFrame:
     df = pd.DataFrame()
@@ -75,7 +76,8 @@ if __name__ == "__main__":
 
     # Clasificacion
     print("Cargando modelo")
-    model = load_model(cfg['Classifier'], custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
+    model = load_model(cfg['Classifier'])#, custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
+    # model = load_model("models/SiameseNetwork.h5", custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
 
     test = pd.read_pickle(cfg['tmp'] + "/PanTest.plk")
     full_spectra = spectraLoader(cfg['tmp'] + '/FullSpectra.jsonl')
@@ -83,11 +85,10 @@ if __name__ == "__main__":
 
     print("Realizando predicciones")
     params = {'dim': (1200,),
-            'batch_size': 32}
+            'batch_size': 1}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
-
     with open(args.o + "/answers.jsonl", "w", encoding="utf8") as f:
         for id, prediction in zip(list_IDs, predictions):
-            answer = {"id": id, "value":prediction}
+            answer = {"id": id, "value":prediction[0].item()}
             f.write(json.dumps(answer) + "\n")
