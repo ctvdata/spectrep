@@ -95,7 +95,7 @@ class NeuralNetworkMLPNN:
         with open(data) as infile:
             for line in infile:
                 val = json.loads(line)
-                dis = val["discourse_types"]
+                dis = val["discourse_type"]
                 dis = enc.transform([[dis[0], cat[dis[0]]], [dis[1], cat[dis[1]]]])
                 aux[val["id"]] = dis.toarray()
         return aux
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     test.train()
     test.showHistory('accuracy')
     test.showHistory('loss')
-    test.save('./model2022/test-post.h5')
+    test.save('./model2022/discurso.h5')
     
 
 

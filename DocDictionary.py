@@ -18,13 +18,13 @@ test = loadDf('pan22-authorship-verification-training-dataset/particiones/test.j
 pan = pd.concat([train, val, test])
 uniquePanDocs = pd.DataFrame(pan.pair.unique()).reset_index().rename(columns={'index':'idtext', 0:'pair'})
 
-trainId2text = pd.merge(train, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_types']) \
+trainId2text = pd.merge(train, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_type']) \
     .reset_index(drop=True)
 
-valId2text = pd.merge(val, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_types']) \
+valId2text = pd.merge(val, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_type']) \
     .reset_index(drop=True)
 
-testId2text = pd.merge(test, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_types']) \
+testId2text = pd.merge(test, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_type']) \
     .reset_index(drop=True)
 
 trainId2text.to_pickle('pan22-authorship-verification-training-dataset/particionesXid/PanTrain.plk')
