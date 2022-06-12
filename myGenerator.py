@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 import tensorflow as tf
 
 class DataGenerator(tf.keras.utils.Sequence):
@@ -109,15 +110,17 @@ class DataGenerator(tf.keras.utils.Sequence):
 
 class TestGenerator(tf.keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, list_IDs, instances, spectra, d, batch_size=32, dim=(1200,)):
+    def __init__(self, list_IDs, instances, spectra, batch_size=32, dim=(1200,)):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
         self.list_IDs = list_IDs
         self.instances = instances
         self.spectra = spectra
-        self.discurse = d
         self.indexes = np.arange(len(self.list_IDs))
+        self.cat = {"email":1, "text_message":2, "essay": 3, "memo":4}
+        self.enc = OneHotEncoder(handle_unknown='ignore')
+        self.enc.fit([["email",1], ["text_message",2], ["essay", 3], ["memo",4]])
 
     def __len__(self):
         'Denotes the number of batches per epoch'
@@ -137,9 +140,10 @@ class TestGenerator(tf.keras.utils.Sequence):
         return X
 
     def __get_pair(self, id):
-
         pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
-        d = self.discurse[id]
+        dis = self.instances.loc[self.instances.id == id].discourse_type.tolist()
+        dis = self.enc.transform([[dis[0], self.cat[dis[0]]], [dis[1], self.cat[dis[1]]]])
+        d = dis.toarray()
         x1 = np.concatenate((d[0], pair_spectra[0].flatten()))
         x2 = np.concatenate((d[1], pair_spectra[1].flatten()))
         return x1, x2 

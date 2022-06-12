@@ -84,7 +84,7 @@ if __name__ == "__main__":
     list_IDs = test.id.unique().tolist()
 
     print("Realizando predicciones")
-    params = {'dim': (1200,),
+    params = {'dim': (1208,),
             'batch_size': 1}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)

@@ -23,7 +23,7 @@ class NeuralNetworkMLPNN:
         self.size = 2400 if op == 1 else 1208
         self.model = self.createModel()
 
-    def train(self, epochs=20):
+    def train(self, epochs=100):
         params = {'dim': (self.size,),
                   'batch_size': 32,
                   'op': self.op}
@@ -69,8 +69,6 @@ class NeuralNetworkMLPNN:
         return model
     
     def save(self, path):
-        # save the model to disk
-        pickle.dump(self.model, open(path+".pkl", 'wb'))
         return self.model.save(path)
 
     def readInfo(self, path):

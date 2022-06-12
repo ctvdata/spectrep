@@ -20,7 +20,7 @@ def createDocDictionary(input: str, output: str) -> None:
 
     uniquePanDocs = pd.DataFrame(pan.pair.unique()).reset_index().rename(columns={'index':'idtext', 0:'pair'})
 
-    testId2text = pd.merge(pan, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair','discourse_types']) \
+    testId2text = pd.merge(pan, uniquePanDocs, on='pair').sort_values('id').drop(columns=['pair']) \
         .reset_index(drop=True)
 
     testId2text.to_pickle(output + '/PanTest.plk')
