@@ -4,18 +4,20 @@ import tensorflow as tf
 
 class DataGenerator(tf.keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, list_IDs, instances, labels, spectra, d, batch_size=32, dim=(1200,),
+    def __init__(self, list_IDs, instances, labels, spectra, batch_size=32, dim=(1200,),
                  shuffle=True, op = 0):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
         self.labels = labels
-        self.discurse = d
         self.list_IDs = list_IDs
         self.instances = instances
         self.spectra = spectra
         self.shuffle = shuffle
         self.option_test = op
+        self.cat = {"email":1, "text_message":2, "essay": 3, "memo":4}
+        self.enc = OneHotEncoder(handle_unknown='ignore')
+        self.enc.fit([["email",1], ["text_message",2], ["essay", 3], ["memo",4]])
         self.on_epoch_end()
 
     def __len__(self):
@@ -60,9 +62,8 @@ class DataGenerator(tf.keras.utils.Sequence):
 
     def __get_pair(self, id):
         pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
-        d = self.discurse[id]
-        x1 = np.concatenate((d[0], pair_spectra[0].flatten()))
-        x2 = np.concatenate((d[1], pair_spectra[1].flatten()))
+        x1 = pair_spectra[0].flatten()
+        x2 = pair_spectra[1].flatten()
         return x1, x2 
             
     def __data_generation_Siamese(self, list_IDs_temp):
@@ -105,7 +106,6 @@ class DataGenerator(tf.keras.utils.Sequence):
 
             # Verdad del conjunto de problemas
             y[i,] = self.labels[ID]
-
         return X, y
 
 class TestGenerator(tf.keras.utils.Sequence):
@@ -141,11 +141,8 @@ class TestGenerator(tf.keras.utils.Sequence):
 
     def __get_pair(self, id):
         pair_spectra = self.instances.loc[self.instances.id == id].merge(self.spectra, left_on='idtext', right_on='id').spectra
-        dis = self.instances.loc[self.instances.id == id].discourse_type.tolist()
-        dis = self.enc.transform([[dis[0], self.cat[dis[0]]], [dis[1], self.cat[dis[1]]]])
-        d = dis.toarray()
-        x1 = np.concatenate((d[0], pair_spectra[0].flatten()))
-        x2 = np.concatenate((d[1], pair_spectra[1].flatten()))
+        x1 = pair_spectra[0].flatten()
+        x2 = pair_spectra[1].flatten()
         return x1, x2 
             
     def __data_generation(self, list_IDs_temp):

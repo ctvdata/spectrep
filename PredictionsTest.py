@@ -30,12 +30,16 @@ if __name__ == "__main__":
         help='Path to the input directory')
     parser.add_argument('-o', type=str,
         help='Path to the output directory')
+    parser.add_argument('-a', type=str, 
+        help='Path name to dataset')
     args = parser.parse_args()
 
     if not args.i:
         raise ValueError('The input directory is required')
     if not args.o:
         raise ValueError('The output directory is required')
+    if not args.a:
+        raise ValueError('ERROR: Corpus is required')
 
     # Transformacion de texto
     
@@ -49,24 +53,24 @@ if __name__ == "__main__":
     print("Extrayendo vectores de caracteristicas")
     tt.featureExtractionStage(cfg['tmp'] + '/panPreprocessed_lex.jsonl',
                                 cfg['tmp'] + '/LexicVectors.jsonl',
-                                cfg['LexicVectorizer'],
+                                args.a + cfg['LexicVectorizer'],
                                 cfg['tmp'] + '/panPreprocessed_syn.jsonl',
                                 cfg['tmp'] + '/SyntacticVectors.jsonl',
-                                cfg['SyntacticVectorizer'],
+                                args.a + cfg['SyntacticVectorizer'],
                                 cfg['tmp'] + '/panPreprocessed_sem.jsonl',
                                 cfg['tmp'] + '/SemanticVectors.jsonl',
-                                cfg['SemanticVectorizer'])
+                                args.a + cfg['SemanticVectorizer'])
 
     print("Obteniendo espectros de contenido")
     tt.spaceMappingStage(cfg['tmp'] + '/LexicVectors.jsonl',
                             cfg['tmp'] + '/LexicSpectra.jsonl',
-                            cfg['LexicProjector'],
+                            args.a + cfg['LexicProjector'],
                             cfg['tmp'] + '/SyntacticVectors.jsonl',
                             cfg['tmp'] + '/SyntacticSpectra.jsonl',
-                            cfg['SyntacticProjector'],
+                            args.a + cfg['SyntacticProjector'],
                             cfg['tmp'] + '/SemanticVectors.jsonl',
                             cfg['tmp'] + '/SemanticSpectra.jsonl',
-                            cfg['SemanticProjector'])
+                            args.a + cfg['SemanticProjector'])
 
     print("Consolidando capas")
     tt.layerConsolidation(cfg['tmp'] + '/LexicSpectra.jsonl',
@@ -76,7 +80,7 @@ if __name__ == "__main__":
 
     # Clasificacion
     print("Cargando modelo")
-    model = load_model(cfg['Classifier'])#, custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
+    model = load_model( args.a + cfg['Classifier']+ args.a + ".h5")#, custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
     # model = load_model("models/SiameseNetwork.h5", custom_objects={"Residual": ResidualLayer, "AbsoluteResidual": AbsoluteResidual})
 
     test = pd.read_pickle(cfg['tmp'] + "/PanTest.plk")
@@ -84,7 +88,7 @@ if __name__ == "__main__":
     list_IDs = test.id.unique().tolist()
 
     print("Realizando predicciones")
-    params = {'dim': (1208,),
+    params = {'dim': (1200,),
             'batch_size': 1}
     x = TestGenerator(list_IDs, test, full_spectra, **params)
     predictions = model.predict(x)
