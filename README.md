@@ -16,7 +16,7 @@ python3 PredictionsTest.py -i <carpeta del corpus>/testinput -o testoutput/ -a <
 
 Para evaluar 
 ```
-python3 pan22_verif_evaluator.py -i <carpeta del corpus>/testinput/truth.jsonl -a testoutput/ -o testoutput/
+python3 verif_evaluator.py -i <carpeta del corpus>/testinput/truth.jsonl -a testoutput/ -o testoutput/
 ```
 
 Resultados
@@ -24,4 +24,5 @@ Resultados
 | Corpus | Train size | Test size | F1    | AUC   | Brier | c@1   | f_05_u | overall|
 |--------|------------|-----------|-------|-------|-------|-------|--------|--------|
 | PAN14  | 189        | 89        | 0.0   | 0.436 | 0.571 | 0.506 | 0.0    | 0.302  |
+| PAN14  | 89         | 189       | 0.0   | 0.6   | 0.564 | 0.497 | 0.0    | 0.332  |
 | PAN22  | 15732      | 1070      | 0.611 | 0.592 | 0.756 | 0.593 | 0.593  | 0.63   |
