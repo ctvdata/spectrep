@@ -36,7 +36,7 @@ class LexicPreprocessor(Preprocessor, Thread):
     Attributes:
         dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
         
-        sink (DocumentSink): Pre-processed document collector.
+        sink (DocumentSink): Pre-processed document sink.
     """
 
     def __init__(self, dispatcher, sink):
@@ -120,7 +120,7 @@ class SyntacticPreprocessor(Preprocessor, Thread):
     Attributes:
         dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-        sink (DocumentSink): Pre-processed document collector.
+        sink (DocumentSink): Pre-processed document sink.
     """
 
     def __init__(self, dispatcher, sink):
@@ -198,7 +198,7 @@ class SemanticPreprocessor(Preprocessor, Thread):
     Attributes:
         dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-        sink (DocumentSink): Pre-processed document collector.
+        sink (DocumentSink): Pre-processed document sink.
     """
 
     def __init__(self, dispatcher, sink):
@@ -282,7 +282,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
         """
         pass
 
@@ -294,7 +294,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
         """
         pass
     
@@ -306,7 +306,7 @@ class PreprocessorAbstractFactory(metaclass=ABCMeta):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
         """
         pass
 
@@ -322,7 +322,7 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
 
         Returns:
             Lexical pre-processing thread.
@@ -336,7 +336,7 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
 
         Returns:
             Syntactical pre-processing thread.
@@ -350,7 +350,7 @@ class PreprocessorFactory(PreprocessorAbstractFactory):
         Args:
             dispatcher (LockedIterator): Generator synchronization object for pre-processing threads.
 
-            sink (DocumentSink): Pre-processed document collector.
+            sink (DocumentSink): Pre-processed document sink.
 
         Returns:
             Semantic pre-processing thread.
