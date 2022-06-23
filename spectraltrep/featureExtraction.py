@@ -7,9 +7,12 @@ import numpy as np
 
 class Doc2VecCorpusReader():
     """
-    Generador para leer documentos de un corpus.
+    Corpus reader generator
 
-    Este gnerador es utilizado por la clase Doc2Vec del paquete GenSim.
+    Used by the GensSim Doc2Vec class
+
+    Args:
+            inputPath (str): File input path.
 
     Yields:
         TaggedDocument
@@ -17,10 +20,10 @@ class Doc2VecCorpusReader():
 
     def __init__(self, inputPath):
         """
-        Inicializa generador de documentos
+        Initializes the document generator.
 
         Args:
-            inputPath (str): Ruta del archivo de entrada.
+            inputPath (str): File input path.
         """
         
         self.__inputPath = inputPath
@@ -33,48 +36,40 @@ class Doc2VecCorpusReader():
                 yield TaggedDocument(tokens, [int(line['id'])])
 
 class Vectorizer(metaclass=ABCMeta):
-    """Interfaz de vectorizador de documentos de texto"""
+    """Document vectorizer interface"""
 
     @abstractmethod
     def fit(self):
         """
-        Entrena un modelo de vectorización de documentos.
+        Fits a document vectorization model.
         """
         pass
 
     @abstractmethod
     def transform(self, corpus):
         """
-        Tansforma un corpus en un conjunto de vectores de características.
+        Transforms a corpus into a set of feature vectors.
         """
         pass
 
     @abstractmethod
     def saveModel(self, outputPath):
-        """Guarda el modelo de vectorización de documentos entrenado."""
+        """Saves the trained document vectorizer model."""
         pass
 
 class LexicVectorizer(Vectorizer):
     """
-    Vectorizador léxico de documentos de texto.
+    Lexic document vectorizer.
     
-    Attributes:
-        vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+    Args:
+        vectorWriter (DocumentSink): Vectorized documents sink.
         
-        corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-        utiliza en la etapa de entrenamiento del modelo de vectorización.
+        corpusReader (CorpusReader): Document reader. It is only used in the
+        training stage of the vectorization model.
     """
 
     def __init__(self, vectorWriter, corpusReader=None):
-        """
-        Inicializa el vectorizador léxico
-        
-        Args:
-            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
-        
-            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            utiliza en la etapa de entrenamiento del modelo de vectorización.
-        """
+        """Initialize the lexical vectorizer."""
 
         self.__model = LexicModel()
         self.__vectorWriter = vectorWriter
@@ -82,16 +77,16 @@ class LexicVectorizer(Vectorizer):
 
     @property
     def model(self):
-        """Modelo de vectorización."""
+        """Vectorization model."""
         return self.__model
 
     @model.setter
     def model(self, inputPath):
         """
-        Estabece un modelo de vectorización pre-entrenado.
+        Establishes a pre-trained vectorization model.
         
         Args:
-            inputPath (str): Ruta del modelo a cargar.
+            inputPath (str): Path of the model to load.
         """
         model = LexicModel()
         model.load(inputPath)
@@ -99,17 +94,17 @@ class LexicVectorizer(Vectorizer):
 
     def fit(self):
         """
-        Entrena un modelo de vectorización léxico de documentos.
+        Trains a lexical vectorization model.
         """
 
         try:
             if self.__corpusReader is None:
-                raise Exception('No se ha definido un corpus reader en el constructor para el entrenamiento.')
+                raise Exception('A reader corpus has not been defined in the constructor.')
             else:
                 gen = self.__corpusReader.getBatch()
                 for batch in gen:
                     for doc in batch[1]:
-                        print(f"Entrenando con doc {doc['id']}", end='\r')
+                        print(f"Training with doc {doc['id']}", end='\r')
                         doc = word_tokenize(doc['text'])
                         for token in doc:
                             self.__model.addToken(token)
@@ -142,13 +137,12 @@ class LexicVectorizer(Vectorizer):
 
     def transform(self, corpusReader=None):
         """
-        Tansforma un corpus en un conjunto de vectores de características léxicas.
+        Transforms a corpus into a set of lexical feature vectors.
 
         Args:
-            CorpusReader (CorpusReader): Lector de documentos de texto. 
-            Se utiliza en la etapa de pruebas. En caso de no especificar uno
-            se hace uso del mismo lector de la etapa de entrenamiento ingresada
-            en el constructor.                
+            CorpusReader (CorpusReader): Text document reader. If one is not specified, 
+            the same reader of the training stage set in the 
+            constructor is used.                
         """
 
         gen = self.__corpusReader.getBatch() if corpusReader is None else corpusReader.getBatch()
@@ -157,7 +151,7 @@ class LexicVectorizer(Vectorizer):
             vectors = []
 
             for t in batch[1]:
-                print(f"Vectorizando documento {t['id']}", end='\r')
+                print(f"Vectorizing document {t['id']}", end='\r')
                 v = dict()
                 v['id'] = t['id']
                 v['vector'] = self.__getVector(t['text'])
@@ -166,21 +160,21 @@ class LexicVectorizer(Vectorizer):
     
     def saveModel(self, outputPath):
         """
-        Guarda el modelo de vectorización de documentos entrenado.
+        Saves the trained document vectorization model.
 
         Args:
-            outputPath (str): Ruta del archivo de salida.
+            outputPath (str): File output path.
         """
 
         self.__model.save(outputPath)
 
 class SyntacticVectorizer(Vectorizer):
     """
-    Vectorizador sintácico de documentos de texto.
+    Syntactic document vectorizer.
 
-    Para esta versión de la aplicación se utiliza el mismo vectorizador semántico 
-    (ver SemanticVectorizer), con la diferencia en que la entrada recibe
-    cadenas de etiqutas POS. 
+    For this version of the application the same semantic vectorizer is used 
+    (see SemanticVectorizer), with the difference that the input 
+    receives strings of POS tags. 
     """
 
     def fit(self):
@@ -194,70 +188,53 @@ class SyntacticVectorizer(Vectorizer):
 
 class SemanticVectorizer(Vectorizer):
     """
-    Vectorizador semántico de documentos de texto.
+    Semantic document vectorizer.
     
-    Attributes:
-        vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+    Args:
+        vectorWriter (DocumentSink): Vectorized documents sink.
 
-        corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-        especifica en la etapa de entrenamiento del modelo de vectorización.
-        vectorSize (int): Numero de dimensiones de los vectores de características
-        de salida.
+        corpusReader (CorpusReader): Text document reader. It is only specified
+        during the vectorization model training stage.
 
-        minCount (int): Número mínimo de aparición de una palabra para ser considerada
-        en el entrenamiento.
+        vectorSize (int): Number of dimensions of the output feature vectors.
 
-        epochs (int): Número de iteraciones en las que se entrenará
-        el modelo de vectorización.
+        minCount (int): The minimum number of word appearances
+        to be considered in the training.
+
+        epochs (int): Number of iterations in which the vectorization model
+        will be trained.
     """
 
     def __init__(self, vectorWriter, corpusReader=None, vectorSize=50, minCount=1, epochs=10):
-        """
-        Inicializa el vectorizador semántico.
-
-        Args:
-            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
-
-            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            especifica en la etapa de entrenamiento del modelo de vectorización.
-            
-            vectorSize (int): Numero de dimensiones de los vectores de características
-            de salida.
-
-            minCount (int): Número mínimo de aparición de una palabra para ser considerada
-            en el entrenamiento.
-
-            epochs (int): Número de iteraciones en las que se entrenará
-            el modelo de vectorización.
-        """
+        """Initializes the semantic vectorizer."""
         self.__model = Doc2Vec(vector_size=vectorSize, min_count=minCount, epochs=epochs)
         self.__vectorWriter = vectorWriter
         self.__corpusReader = corpusReader
 
     @property
     def model(self):
-        """Modelo de vectorización."""
+        """Vectorization model."""
         return self.__model
 
     @model.setter
     def model(self, inputPath):
         """
-        Estabece un modelo de vectorización pre-entrnado.
+        Sets a pre-trainer vectorization model.
         
         Args:
-            inputPath (str): Ruta del modelo a cargar.
+            inputPath (str): Model input path.
         """
 
         self.__model = Doc2Vec.load(inputPath)
     
     def fit(self):
         """
-        Entrena un modelo de vectorización léxico de documentos.
+        Train a document semantic vectorization model.
         """
 
         try:
             if self.__corpusReader is None:
-                raise Exception('No se ha definido un corpus reader en el constructor para el entrenamiento.')
+                raise Exception('A reader corpus has not been defined in the constructor.')
             else:
                 self.__model.build_vocab(self.__corpusReader)
                 self.__model.train(self.__corpusReader, total_examples=self.__model.corpus_count, epochs=self.__model.epochs)            
@@ -266,13 +243,12 @@ class SemanticVectorizer(Vectorizer):
 
     def transform(self, corpusReader=None):
         """
-        Tansforma un corpus en un conjunto de vectores de características semánticas.
+        Transforms a corpus into a set of semantic feature vectors.
 
         Args:
-            CorpusReader (CorpusReader): Lector de documentos de texto. 
-            Se utiliza en la etapa de pruebas. En caso de no especificar uno
-            se hace uso del mismo lector de la etapa de entrenamiento ingresada
-            en el constructor.
+            CorpusReader (CorpusReader): Text document reader. If one is not specified, 
+            the same reader of the training stage set in the 
+            constructor is used.
         """
 
         cr = self.__corpusReader if corpusReader is None else corpusReader
@@ -285,43 +261,43 @@ class SemanticVectorizer(Vectorizer):
 
     def saveModel(self, outputPath):
         """
-        Guarda el modelo de vectorización de documentos entrenado.
+        Saves the trained document vectorization model.
 
         Args:
-            outputPath (str): Ruta del archivo de salida.
+            outputPath (str): File output path.
         """
 
         self.__model.save(outputPath)
 
 class VectorizerAbstractFactory(metaclass=ABCMeta):
-    """Fabrica abstracta de vectorizadores."""
+    """Vectorizer abstract factory."""
     @abstractmethod
     def createLexicVectorizer(self):
-        """Crea un vectorizador léxico."""
+        """Creates a lexic vectorizer."""
         pass
 
     @abstractmethod
     def createSyntacticVectorizer(self):
-        """Crea un vectorizador sintáctico."""
+        """Creates a syntactic vectorizer."""
         pass
 
     @abstractmethod
     def createSemanticVectorizer(self):
-        """Crea un vectorizador semántico."""
+        """Creates a semantic vectorizer."""
         pass
 
 class VectorizerFactory(VectorizerAbstractFactory):
-    """Fabrica de vectorizadores"""
+    """Vectorizer factory."""
 
     def createLexicVectorizer(self, vectorWriter, corpusReader=None):
         """
-        Crea un vectorizador léxico.
+        Creates a lexic vectorizer.
 
         Args:
-            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+            vectorWriter (DocumentSink): Vectorized document sink.
 
-            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            utiliza en la etapa de entrenamiento del modelo de vectorización.
+            corpusReader (CorpusReader): Text document reader. It is only used
+            in the training stage of the vectorization model.
         
         Returns:
             LexicVectorizer
@@ -331,26 +307,25 @@ class VectorizerFactory(VectorizerAbstractFactory):
 
     def createSyntacticVectorizer(self, vectorWriter, corpusReader=None, vectorSize=50, minCount=1, epochs=10):
         """
-        Crea un vectorizador sintáctico.
+        Creates a lexic vectorizer.
 
-        Para esta versión de la aplicación se utiliza el mismo vectorizador semántico 
-        (ver SemanticVectorizer), con la diferencia en que la entrada recibe
-        cadenas de etiqutas POS.
+        For this version of the application the same semantic vectorizer is used 
+        (see SemanticVectorizer), with the difference that the input 
+        receives strings of POS tags. 
 
         Args:
-            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+            vectorWriter (DocumentSink): Vectorized documents sink.
 
-            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            especifica en la etapa de entrenamiento del modelo de vectorización.
+            corpusReader (CorpusReader): Text document reader. It is only specified
+            during the vectorization model training stage.
 
-            vectorSize (int): Numero de dimensiones de los vectores de características
-            de salida.
+            vectorSize (int): Number of dimensions of the output feature vectors.
 
-            minCount (int): Número mínimo de aparición de una palabra para ser considerada
-            en el entrenamiento.
+            minCount (int): The minimum number of word appearances
+            to be considered in the training.
 
-            epochs (int): Número de iteraciones en las que se entrenará
-            el modelo de vectorización.
+            epochs (int): Number of iterations in which the vectorization model
+            will be trained.
 
         Returns:
             SemanticVectorizer
@@ -361,22 +336,21 @@ class VectorizerFactory(VectorizerAbstractFactory):
         
     def createSemanticVectorizer(self, vectorWriter, corpusReader=None, vectorSize=50, minCount=1, epochs=10):
         """
-        Crea un vectorizador semántico.
+        Creates a semantic vectorizer.
 
         Args:
-            vectorWriter (DocumentSink): Recolector de documentos vectorizados.
+            vectorWriter (DocumentSink): Vectorized documents sink.
 
-            corpusReader (CorpusReader): Lector de documentos de texto. Solamente se
-            especifica en la etapa de entrenamiento del modelo de vectorización.
+            corpusReader (CorpusReader): Text document reader. It is only specified
+            during the vectorization model training stage.
 
-            vectorSize (int): Numero de dimensiones de los vectores de características
-            de salida.
+            vectorSize (int): Number of dimensions of the output feature vectors.
 
-            minCount (int): Número mínimo de aparición de una palabra para ser considerada
-            en el entrenamiento.
+            minCount (int): The minimum number of word appearances
+            to be considered in the training.
 
-            epochs (int): Número de iteraciones en las que se entrenará
-            el modelo de vectorización.
+            epochs (int): Number of iterations in which the vectorization model
+            will be trained.
 
         Returns:
             SemanticVectorizer
@@ -385,38 +359,38 @@ class VectorizerFactory(VectorizerAbstractFactory):
 
 class LexicModel():
     """
-    Modelo léxico de vectorización.
+    Vectorization lexical model.
     
-    Este modelo está basado en la candidad de información que aporta
-    una palabra al documento.
+    This model is based on the amount of information that
+    a word provides to a document.
 
-    Attributes:
-        vocabulary (dict): Diccionario de frecuencias de palabras en el corpus.
+    Args:
+        vocabulary (dict): Corpus' dictionary of word frequencies.
         corpusTotalTokens (int): Total de tokens en el corpus.
     """
 
     def __init__(self):
-        """Inicializa el modelo léxico."""
+        """Initializes the lexical model."""
 
         self.__vocabulary = dict()
         self.__corpusTotalTokens = 0
 
     @property
     def corpusTotalTokens(self):
-        """Devuelve el total de tokens en el corpus."""
+        """Returns the corpus' total of tokens"""
         return self.__corpusTotalTokens
 
     @property
     def vocabularyLength(self):
-        """Devuelve la cantidad de palabras únicas en el corpus."""
+        """Returns the vocabulary length."""
         return len(self.__token2id.keys())
 
     def addToken(self, token):
         """
-        Agrega un token al vocabulario y la conrabilización de palabras en el corpus.
-        
+        Adds a token to the corpus' vocabulary and its frequency.
+
         Args:
-            token (str): Palabra a agregar.
+            token (str): Token to add.
         """
 
         if token not in self.__vocabulary.keys():
@@ -428,13 +402,13 @@ class LexicModel():
 
     def getTokenProbability(self, token):
         """
-        Devuelve la probabilidad de aparición de una palabra en el corpus.
+        Returns the probability of a word occurrence in the corpus.
 
         Args:
-            token (str): Palabra cuya probabiliad de aparición se desea saber.
+            token (str): Word whose probability of occurrence its wanted to know.
 
         Returns:
-            Probabilidad de la palabra.
+            Word probability.
         """
 
         if token in self.__vocabulary.keys():
@@ -444,13 +418,13 @@ class LexicModel():
 
     def getTokenFrequency(self, token):
         """
-        Devuelve la frecuencia de la plabra en el corpus
+        Returns a word frequency in the corpus.
 
         Args:
-            token (str): Palabra cuya frecuencia de aparición se desea saber.
+            token (str): Word whose frequency its wanted to know.
         
         Returns:
-            Frecuencia de la palabra.
+            Word frequency.
         """
 
         if token in self.__vocabulary.keys():
@@ -460,24 +434,24 @@ class LexicModel():
 
     def getVocabulary(self):
         """
-        Devuelve el vocabulario del corpus.
+        Returns the corpus' vocabulary
         """
 
         return self.__vocabulary.keys()
 
     def setToken2Id(self):
-        """Establece un diccionario de palabras con un id único."""
+        """Sets a token dictionary with unique ids."""
 
         self.__token2id = dict()
         for idx, token in enumerate(self.__vocabulary.keys()):
             self.__token2id[token] = idx
     
     def getTokenId(self, token):
-        """Devuelve el id de una palabra en el corpus."""
+        """Returns the id of a token in the corpus."""
 
         try:
             if token not in self.__token2id.keys():
-                raise Exception("No existe el token en el vocabulario")
+                raise Exception("The token does not exist in the vocabulary.")
             else:
                 return self.__token2id[token]
 
@@ -485,7 +459,7 @@ class LexicModel():
             print(err)
 
     def save(self, outputPath):
-        """Guarda el modelo léxico."""
+        """Saves the lexic model."""
 
         with open(outputPath, 'w', encoding='utf-8') as f:
             dumpDict = {'corpusTotalTokens': self.__corpusTotalTokens,
@@ -494,7 +468,7 @@ class LexicModel():
             f.write(json.dumps(dumpDict))
 
     def load(self, inputPath):
-        """Carga un modelo léxico preestablecido."""
+        """Loads a lexic model."""
         
         with open(inputPath, encoding='utf-8') as f:
             dumpDict = json.loads(f.read())
