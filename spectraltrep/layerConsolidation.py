@@ -4,45 +4,35 @@ import numpy as np
 from spectraltrep.utils import DocumentSink
 
 class Reader(metaclass=ABCMeta):
-    """Lector de espectros de contenido."""
+    """Content spectra reader."""
     @abstractmethod
     def readSpectra(self):
-        """Lee un espectro de contenido del archivo de entrada."""
+        """Reads content spectra from an input file."""
         pass
 
 class SpectraReader(Reader):
     """
-    Lector de espectros de contenido.
-    
-    Permite cargar el espectro del Corpus línea por línea.
+    Content spectra reader.
     
     Attributes:
-        inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
-        con el siguiente formato:
+        inputPath (str): File input path. The input must be a valid jsonl
+        file with the next format:
 
-            {"id": idDelDocumento, "spectre": espectroDelDocumento}
+            {"id": document id, "spectre": document spectre}
             ...
     """
 
     def __init__(self, inputPath):
-        """
-        Inicialzia el lector de espectros.
+        """Initialized the spectra reader."""
 
-        Args:
-            inputPath (str): Ruta del archivo de entrada. Este debe ser un archivo jsonl
-            con el siguiente formato:
-
-                {"id": idDelDocumento, "spectre": espectroDelDocumento}
-                ...
-        """
         self.__inputPath = inputPath
 
     def readSpectra(self):
         """
-        Lee un espectro de contenido del archivo de entrada.
+        Reads a content spectre from the input file.
         
         Yields:
-            (int, lista bidimensional de tipo double): El id y su spectro correspondiente.
+            (int, bidimensional list): Content spectre with its corresponding id.
         """
         with open(self.__inputPath) as infile:
             for line in infile:
@@ -50,44 +40,39 @@ class SpectraReader(Reader):
                 yield spectre_line['id'], spectre_line['spectre']
 
 class Assembler(metaclass=ABCMeta):
-    """Ensamblador de espectros de contenido"""
+    """Content spectra assembler."""
 
     @abstractmethod
     def assemble(self, *spectra):
         """
-        Ensambla cada uno de los espectros de contenido en una sola matriz por documento.
+        Assembles each content spectra from a document into a single matrix.
         """
         pass
 
 class SpectraAssembler(Assembler):
     """
-    Ensamblador de espectros de contenido. 
+    Content spectra assembler.
     
-    Permite unificar los espectros de las diferentes características de un corpus.
+    Unifies different content spectra of a single corpus.
 
     Attributes:
-        outputPath (str): Ruta del archivo de salida que contendrá los espectros ensamblados.
+        outputPath (str): Output file for the assembled spectra.
     """ 
 
     def __init__(self, outputPath):
-        """
-        Inicializa el ensamblador de espectros.
-
-        Args:
-            outputPath (str): Ruta del archivo de salida que contendrá
-                los espectros ensamblados.
-        """
+        """Initializes the spectra assembler."""
         self.__outputPath = outputPath
         
     def __unify(self, spectra):
         """
-        Unifica los diferentes espectros de un mismo documento.
+        Unifies all the spectra from a single document.
         
         Args:
-            spectra (list): Tupla que contiene (id, espectros).
+            spectra (list): Tuple of the dorm (id, specter).
         
         Returns:
-            (int, list): El id y una lista que contiene los espectros de un mismo documento.
+            (int, list): Id and all spectra from a single document 
+            into a single matrix.
         """
         id = spectra[0][0]
         vectors = np.array([v[1] for v in spectra])
@@ -96,11 +81,10 @@ class SpectraAssembler(Assembler):
 
     def assemble(self, *spectra):
         """
-        Ensambla cada uno de los espectros de contenido en una sola matriz por documento.
+        Assembles each content spectra from a document into a single matrix.
 
         Args:
-            spectra (str): Cada parámetro será la ruta del archivo donde 
-            se encuentra la información de cada spectro.
+            List(str): List of spectra input paths.
         """
         ds = DocumentSink(self.__outputPath, False)
         docReader = [SpectraReader(i) for i in spectra]
@@ -111,4 +95,4 @@ class SpectraAssembler(Assembler):
                 batch = [next(gen) for gen in generators]
                 ds.addPreprocessedBatch(self.__unify(batch))
         except StopIteration:
-            print("Información guardada")
+            print("Information saved.")
