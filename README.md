@@ -56,18 +56,19 @@ pip3 install -r requirements.txt
 ## Example of Usage <small>[[Top](#index)]</small>
 [Here](tests/SpectrepTest.py) is a quick example on how to use the the API
 
-By stages:
+By stages
+
 [Preprocessing](tests/PreProcessingFacade.py):
 ```
-    ppf = PreProcessingFacade()
-    ppf.preProcess(inputPath, outputPath, preProcessingType, numThreads, batchSize, sortedOutput)
+ppf = PreProcessingFacade()
+ppf.preProcess(inputPath, outputPath, preProcessingType, numThreads, batchSize, sortedOutput)
 ```
 Where:
-inputPath - Input file
-outputPath - Output file
-preProcessingType - Applicable preprocessing type, in this case ['lex', 'syn', 'sem']
-numThreads - Number of preprocessing threads
-batchSize - Number of documents delivered by CorpusReader per batch
+- inputPath - Input file
+- outputPath - Output file
+- preProcessingType - Applicable preprocessing type, in this case ['lex', 'syn', 'sem']
+- numThreads - Number of preprocessing threads
+- batchSize - Number of documents delivered by CorpusReader per batch
 
 Extract vectors (features):
 - [Lexical](tests/PipelineLexicVectorizerTrain.py):
@@ -81,8 +82,10 @@ Extract vectors (features):
     lv.saveModel('outputs/lexicModel.json')
     vw.saveCorpus()
     ```
-- [Semantic](tests/PipelineSemanticVectorizerTrain.py) - Syntactic:
-    The process is the same for semantic and syntactic vectors, only the name changes depending on which vector you want, this is indicated in the code as ```<Semantic | Syntactic>``` or ```<sem | syn>```
+- [Semantic - Syntactic](tests/PipelineSemanticVectorizerTrain.py) :
+    The process is the same for semantic and syntactic vectors, only the name changes depending on which vector you want, this is indicated in the code as
+
+    ```<Semantic | Syntactic>``` or ```<sem | syn>```
     ```
     cr = Doc2VecCorpusReader('outputs/Preprocessed_<sem | syn>.jsonl')
     vw = DocumentSink('outputs/<Semantic | Syntactic>Vectors.jsonl', False)
@@ -105,7 +108,7 @@ Unified space mapping:
     proj.getProjection(data, sink)
     proj.saveSomModel('outputs/LexicModel.som')   
     ```
--  [Semantic](tests/PipelineUnifiedSpace.py) - Syntactic:
+-  [Semantic - Syntactic](tests/PipelineUnifiedSpace.py):
     ```
     vr = VectorReader('outputs/<Semantic | Syntactic>Vectors.jsonl')
     proj = Projector(20,300,learningRate=0.5)
