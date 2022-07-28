@@ -26,11 +26,14 @@ This API takes a text and extracts from it the lexical, syntactic, and semantic 
 The API is composed of four main stages:
 1. Extract lexical, syntactic, and semantic features
 2. Create a vector for each extracted feature
-3. Vectors are unified using SOM
+3. Vectors are unified using [SOM](https://github.com/JustGlowing/minisom)
 4. The outputs of the previous stage are joined, which gives us the spectral representation
 
 <p align="center">
   <img src="documentation/figs/spectral.png" alt="spectral"/>
+</p>
+<p align="center">
+  <img src="documentation/figs/spectralAPI.png" alt="spectral"/>
 </p>
 
 To see in detail what each stage does, go [here](documentation/README.md).
@@ -54,7 +57,13 @@ pip3 install -r requirements.txt
 
 <a id="example"></a>
 ## Example of Usage <small>[[Top](#index)]</small>
-[Here](tests/SpectrepTest.py) is a quick example on how to use the the API
+[Here](tests/SpectrepTest.py) is a quick example on how to use the the API, 
+to run the example:
+```
+cd test/
+mkdir outputs
+python3 SpectrepTest.py
+```
 
 By stages
 

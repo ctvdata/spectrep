@@ -1,4 +1,6 @@
 import time
+import sys
+sys.path.append('..')
 from spectraltrep.preProcessing import PreProcessingFacade
 from spectraltrep.featureExtraction import VectorizerFactory, Doc2VecCorpusReader
 from spectraltrep.utils import CorpusReader, DocumentSink
@@ -11,7 +13,7 @@ def preProcessStage():
     print("Etapa de pre-procesmiento")
 
     inputPath = '../data/data_sample.jsonl' # Archivo de entrada
-    outputPath = 'outputs/panPreprocessed.jsonl' # Archivo de salida
+    outputPath = 'outputs/Preprocessed.jsonl' # Archivo de salida
     preProcessingType = ['lex','syn','sem'] # Tipo de preprocesamiento aplicable ['lex', 'syn', 'sem']
     numThreads = 1 # Numero de hilos de preprocesamiento
     batchSize = 500 # Numero de documentos que entrega CorpusReader por batch
