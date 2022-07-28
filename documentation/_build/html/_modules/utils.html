@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils module &mdash; documentación de Spectral Text Representation - 0.1</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="prev" title="spaceUnification module" href="spaceUnification.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Spectral Text Representation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">spectraltrep</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="featureExtraction.html">featureExtraction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layerConsolidation.html">layerConsolidation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preProcessing.html">preProcessing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spaceUnification.html">spaceUnification module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Spectral Text Representation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">spectraltrep</a> &raquo;</li>
+      <li>utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_modules/utils.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-utils">
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Enlazar permanentemente con este título"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.CorpusReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">CorpusReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputPath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batchSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.CorpusReader" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.Dispatcher" title="utils.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.Dispatcher</span></code></a></p>
+<p>Allows to read a corpus is batches.</p>
+<dl class="simple">
+<dt>Attributes: </dt><dd><p>inputPath (str): File input path.
+batchSize (int): Size of batches.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.CorpusReader.getBatch">
+<span class="sig-name descname"><span class="pre">getBatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.CorpusReader.getBatch" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Creates document batches with an unique id.</p>
+<p>Yields:
+(int, list of dictionaries): Tuple with unique id and batch of documents.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.Dispatcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Dispatcher</span></span><a class="headerlink" href="#utils.Dispatcher" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Allows to read a corpus is batches.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Dispatcher.getBatch">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getBatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.Dispatcher.getBatch" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.DocumentSink">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">DocumentSink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorted</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.DocumentSink" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.Sink" title="utils.Sink"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.Sink</span></code></a></p>
+<p>Document sink</p>
+<p>Used to collect processed documents.</p>
+<dl>
+<dt>Args:</dt><dd><p>sorted (bool): Indicates if the processed corpus will be saved in
+the same input order.</p>
+<p>outputPath (str): File output path.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.DocumentSink.addPreprocessedBatch">
+<span class="sig-name descname"><span class="pre">addPreprocessedBatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.DocumentSink.addPreprocessedBatch" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Adds a pre-processed batch of documents to a collection.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>batch (dic): Diccionry with batch id and list of pre-processed documents.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.DocumentSink.saveCorpus">
+<span class="sig-name descname"><span class="pre">saveCorpus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.DocumentSink.saveCorpus" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Saves the pre-processed corpus to list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.LockedIterator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">LockedIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">it</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.LockedIterator" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Used to ensure muti-threading sincronization.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.Sink">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Sink</span></span><a class="headerlink" href="#utils.Sink" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Document sink.</p>
+<p>Used to collect processed documents.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Sink.addPreprocessedBatch">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">addPreprocessedBatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Sink.addPreprocessedBatch" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Adds a pre-processed batch of documents to a collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Sink.saveCorpus">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">saveCorpus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.Sink.saveCorpus" title="Enlazar permanentemente con esta definición"></a></dt>
+<dd><p>Saves the collection of processed documents to disk.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="spaceUnification.html" class="btn btn-neutral float-left" title="spaceUnification module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2022, Melesio Crespo, Jorge Cortés, Karla Salas.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

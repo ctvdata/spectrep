@@ -10,7 +10,7 @@ Welcome to Spectral Text Representation's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+   _modules/modules
 
 Indices and tables
 ==================
