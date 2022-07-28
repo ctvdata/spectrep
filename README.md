@@ -54,17 +54,25 @@ pip3 install -r requirements.txt
 
 <a id="example"></a>
 ## Example of Usage <small>[[Top](#index)]</small>
+[Here](tests/SpectrepTest.py) is a quick example on how to use the the API
 
+By stages:
 [Preprocessing](tests/PreProcessingFacade.py):
 ```
     ppf = PreProcessingFacade()
     ppf.preProcess(inputPath, outputPath, preProcessingType, numThreads, batchSize, sortedOutput)
 ```
+Where:
+inputPath - Input file
+outputPath - Output file
+preProcessingType - Applicable preprocessing type, in this case ['lex', 'syn', 'sem']
+numThreads - Number of preprocessing threads
+batchSize - Number of documents delivered by CorpusReader per batch
 
-Extract vectors:
+Extract vectors (features):
 - [Lexical](tests/PipelineLexicVectorizerTrain.py):
     ```
-    cr = CorpusReader('outputs/panPreprocessed_lex.jsonl', 500)
+    cr = CorpusReader('outputs/Preprocessed_lex.jsonl', 500)
     vw = DocumentSink('outputs/LexicVectors.jsonl', False)
     vf = VectorizerFactory()
     lv = vf.createLexicVectorizer(vw, cr)
@@ -73,9 +81,10 @@ Extract vectors:
     lv.saveModel('outputs/lexicModel.json')
     vw.saveCorpus()
     ```
--  [Semantic](tests/PipelineSemanticVectorizerTrain.py) - Syntactic:
+- [Semantic](tests/PipelineSemanticVectorizerTrain.py) - Syntactic:
+    The process is the same for semantic and syntactic vectors, only the name changes depending on which vector you want, this is indicated in the code as ```<Semantic | Syntactic>``` or ```<sem | syn>```
     ```
-    cr = Doc2VecCorpusReader('outputs/panPreprocessed_<sem | syn>.jsonl')
+    cr = Doc2VecCorpusReader('outputs/Preprocessed_<sem | syn>.jsonl')
     vw = DocumentSink('outputs/<Semantic | Syntactic>Vectors.jsonl', False)
     vf = VectorizerFactory()
     sv = vf.create<Semantic | Syntactic>Vectorizer(vw, cr, 300)
