@@ -29,12 +29,27 @@ firefox _build/html/index.html
 
 <a id="preprocessing"></a>
 ## Text Pre-Processing Stage <small>[[Top](#index)]</small>
+
+Different pre-processing techniques are applied to the input corpus depending on the layer we work on (lexical, syntactic, or semantic layer). The only common pre-processing task for all layers are converting all text to lowercase and tokenizing it for all layers.
+
+We do not remove stop words or punctuation symbols to preserve as much information as possible. We also preserve labels with named entities in the form of ```<entity>``` (for example, streets, people, organizations, etc.) in the tokenization process.
+
+The syntactic layer applies the part-of-speech tagging (POS tagging) process. From this stage, we obtained three new versions of the corpus, one for each text component.
+
+To carry out this process, it is possible to use threads, since each text within the corpus can be processed independently of other texts within the corpus, even between feature layers, since it is possible to use threads, locks are also used to prevent something wrong with them.
+
 <p align="center">
   <img src="figs/preprocessing.png" alt="preprocessing"/>
 </p>
+
+For this stage, the user only interacts with the PreProcessingFacade class, this class is responsible for reading the corpus with the help of ```CorpusReader()``` found in the ```utils.py``` file, later according to which layers we want (lex, syn, sem) the corresponding preprocessors are created with the help of the ```PreprosessorFactory``` class, where each one makes use of its respective ```LexicPreprocessor```, ```SyntacticPreprocessor``` or ```SemanticPreprocessor```, finally each corpus that results from passing through a Preprocessor is saved using ```DocumentSink()```, which is also found in ```utils.py``` file. 
+
 <p align="center">
   <img src="figs/preprocessingClass.png" alt="preprocessingClass"/>
 </p>
+
+The utils file only contains two classes ```CorpusReader``` and ```DocumentSink``` with their respective interfaces. The first one is in charge of reading the corpus but by blocks, since the corpus could be huge and the memory of the computer could not be enough. The second class is in charge of receiving the corpus blocks already pre-processed and here we have two options: saving the blocks as they are received or first receiving all those blocks, ordering them, and finally saving them.
+
 <p align="center">
   <img src="figs/utilsClass.png" alt="utilsClass"/>
 </p>
