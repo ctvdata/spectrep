@@ -8,15 +8,15 @@ from spectraltrep.spaceUnification import VectorReader, Projector
 from spectraltrep.utils import DocumentSink
 
 def preProcessStage():
-    """Etapa de pre-procesamiento"""
+    """Pre-processing stage"""
 
-    print("Etapa de pre-procesmiento")
+    print("Pre-processing stage")
 
-    inputPath = '../data/data_sample.jsonl' # Archivo de entrada
-    outputPath = 'outputs/Preprocessed.jsonl' # Archivo de salida
-    preProcessingType = ['lex','syn','sem'] # Tipo de preprocesamiento aplicable ['lex', 'syn', 'sem']
-    numThreads = 1 # Numero de hilos de preprocesamiento
-    batchSize = 500 # Numero de documentos que entrega CorpusReader por batch
+    inputPath = '../data/data_sample.jsonl' # input file
+    outputPath = 'outputs/Preprocessed.jsonl' # output file
+    preProcessingType = ['lex','syn','sem'] # Applicable preprocessing type ['lex', 'syn', 'sem']
+    numThreads = 1 # Number of preprocessing threads
+    batchSize = 500 # Number of documents delivered by CorpusReader per batch
     sortedOutput = True
 
     ppf = PreProcessingFacade()
@@ -25,25 +25,25 @@ def preProcessStage():
     del(inputPath, outputPath, preProcessingType, numThreads, batchSize, sortedOutput, ppf)
 
 def featureExtractionStage() -> int:
-    """Etapa de extraccion de caracteristicas"""
+    """Feature Extraction Stage"""
 
-    print("Etapa de extraccion de caracteristicas")
+    print("Feature Extraction Stage")
 
-    # Extraccion de vectores léxicos
+    # Extraction of lexical vectors
 
-    print('Extraccion de vectores lexicos')
+    print('Extraction of lexical vectors')
     cr = CorpusReader('outputs/Preprocessed_lex.jsonl', 500)
     vw = DocumentSink('outputs/LexicVectors.jsonl', False)
     vf = VectorizerFactory()
     lv = vf.createLexicVectorizer(vw, cr)
 
-    print('Entrenando modelo lexico')
+    print('Training model - lexical')
     lv.fit()
 
-    print('Realizando vectorizacion')
+    print('Performing vectorization')
     lv.transform()
 
-    print('Guardando resultados')
+    print('Save results')
     lv.saveModel('outputs/lexicModel.json')
     vw.saveCorpus()
 
@@ -51,41 +51,41 @@ def featureExtractionStage() -> int:
 
     del(cr, vw, vf, lv)
 
-    # Extraccion de vectores sintácticos
+    # Extraction of syntactic vectors
 
-    print('Extraccion de vectores sintacticos')
+    print('Extraction of syntactic vectors')
     cr = Doc2VecCorpusReader('outputs/Preprocessed_syn.jsonl')
     vw = DocumentSink('outputs/SyntacticVectors.jsonl', False)
     vf = VectorizerFactory()
     sv = vf.createSemanticVectorizer(vw, cr, 300)
 
-    print('Entrenando modelo sintactico')
+    print('Training model - syntactic')
     sv.fit()
 
-    print('Realizando vectorizacion')
+    print('Performing vectorization')
     sv.transform()
 
-    print('Guardando resultados')
+    print('Save results')
     sv.saveModel('outputs/dv2SynModel')
     vw.saveCorpus()
 
     del(cr, vw, vf, sv)
 
-    # Extraccion de vectores semanticos
+    # Semantic vector extraction
 
-    print('Extraccion de vectores semanticos')
+    print('Semantic vector extraction')
     cr = Doc2VecCorpusReader('outputs/Preprocessed_sem.jsonl')
     vw = DocumentSink('outputs/SemanticVectors.jsonl', False)
     vf = VectorizerFactory()
     sv = vf.createSemanticVectorizer(vw, cr, 300)
 
-    print('Entrenando modelo semantico')
+    print('Training model - semantic')
     sv.fit()
 
-    print('Realizando vectorizacion')
+    print('Performing vectorization')
     sv.transform()
 
-    print('Guardando resultados')
+    print('Save results')
     sv.saveModel('outputs/dv2SemModel')
     vw.saveCorpus()
 
@@ -94,74 +94,74 @@ def featureExtractionStage() -> int:
     return lexicVectorLenght
 
 def spaceMappingStage(lexicVectorLenght: int):
-    """Unificacion del espacio"""
+    """Space unification"""
 
-    print("Etapa de unificacion del espacio")
+    print("Space unification stage")
 
-    # Obtencion de espectros lexicos
+    # Obtaining lexical spectra
 
     vr = VectorReader('outputs/LexicVectors.jsonl')
-    proj = Projector(20,lexicVectorLenght,learningRate=0.5) # Indicamos el tamano de la capa de salida y las dimensiones de entrada
+    proj = Projector(20,lexicVectorLenght,learningRate=0.5) # We indicate the size of the output layer and the input dimensions
     sink = DocumentSink('outputs/LexicSpectra.jsonl', False)
 
-    print("Leyendo vectores lexicos")
+    print("Reading vectors - lexical")
     data = vr.readFeatureVectors()
 
-    print("Entrenando som")
+    print("Training SOM")
     proj.fit(data, 1000)
 
-    print("Obteninendo espectros")
+    print("Getting spectra")
     proj.getProjection(data, sink)
 
-    print('Guardando modelo')
+    print('Save model')
     proj.saveSomModel('outputs/LexicModel.som')
 
     del(vr, proj, sink, data, lexicVectorLenght)
 
-    # Obtencion de espectros sintacticos
+    # Obtaining syntactic spectra
 
     vr = VectorReader('outputs/SyntacticVectors.jsonl')
-    proj = Projector(20,300,learningRate=0.5) # Indicamos el tamano de la capa de salida y las dimensiones de entrada
+    proj = Projector(20,300,learningRate=0.5) # We indicate the size of the output layer and the input dimensions
     sink = DocumentSink('outputs/SyntacticSpectra.jsonl', False)
 
-    print("Leyendo vectores sintacticos")
+    print("Reading vectors - syntactic")
     data = vr.readFeatureVectors()
 
-    print("Entrenando som")
+    print("Training SOM")
     proj.fit(data, 1000)
 
-    print("Obteninendo espectros")
+    print("Getting spectra")
     proj.getProjection(data, sink)
 
-    print('Guardando modelo')
+    print('Save model')
     proj.saveSomModel('outputs/SyntacticModel.som')
 
     del(vr, proj, sink, data)
 
-    # Obtencion de espectros semanticos
+    # Obtaining semantic spectra
 
     vr = VectorReader('outputs/SemanticVectors.jsonl')
-    proj = Projector(20,300,learningRate=0.1) # Indicamos el tamano de la capa de salida y las dimensiones de entrada
+    proj = Projector(20,300,learningRate=0.1) # We indicate the size of the output layer and the input dimensions
     sink = DocumentSink('outputs/SemanticSpectra.jsonl', False)
 
-    print("Leyendo vectores semanticos")
+    print("Reading vectors - semantic")
     data = vr.readFeatureVectors()
 
-    print("Entrenando som")
+    print("Training SOM")
     proj.fit(data, 1000)
 
-    print("Obteninendo espectros")
+    print("Getting spectra")
     proj.getProjection(data, sink)
 
-    print('Guardando modelo')
+    print('Save model')
     proj.saveSomModel('outputs/SemanticModel.som')
 
     del(vr, proj, sink, data)
 
 def layerConsolidation():
-    """Consolidacion de capas"""
+    """LayerConsolidation"""
 
-    print("Etapa de consolidacion de capas")
+    print("Layer consolidation stage")
 
     from spectraltrep.layerConsolidation import SpectraAssembler
 
@@ -171,7 +171,7 @@ def layerConsolidation():
 
     del(assembler, path)
 
-    print("Ensamble terminado")
+    print("Ensemble finished")
 
 if __name__ == "__main__":
     init = time.time()

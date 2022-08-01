@@ -6,26 +6,26 @@ from spectraltrep.utils import DocumentSink, CorpusReader, LockedIterator
 import time
 
 init = time.time()
-numThreads = 1 # Numero de hilos de preprocesamiento
-batchSize = 3000 # Numero de documentos que entrega CorpusReader por batch
+numThreads = 1 # Number of preprocessing threads
+batchSize = 3000 # Number of documents delivered by Corpus Reader per batch
 
-# Creamos la fabrica de preprocesadores, el lector de corpus y el sink que recibe los documentos preprocesados
+# We create the factory of preprocessors, the corpus reader, and the sink that receives the preprocessed documents
 ppf = PreprocessorFactory()
 cr = CorpusReader('../data/data.jsonl', batchSize).getBatch()
 lockedCr = LockedIterator(cr)
 ds = DocumentSink("./outputs/SalidaPipelinePreProcesamientoLexico.jsonl", True)
 
-# Inicializamos hilos de preprocesamiento
+# We initialize preprocessing threads
 lexicPreprocessingThreads = []
 for _ in np.arange(numThreads):
     lpp = ppf.createLexicPreprocessor(lockedCr, ds)
     lpp.start()
     lexicPreprocessingThreads.append(lpp)
 
-# Esperamos a que terminen los hilos de preprocesamiento
+# Wait for the preprocessing threads to finish
 for t in lexicPreprocessingThreads:
     t.join()
 
-# Guardamos el corpus preprocesado
+# We save the preprocessed corpus
 ds.saveCorpus()
-print('%d hilos, %.02f segundos' % (numThreads,time.time() - init))
+print('%d threads, %.02f seconds' % (numThreads,time.time() - init))

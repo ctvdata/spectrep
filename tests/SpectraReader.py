@@ -3,12 +3,12 @@ sys.path.append('..')
 import numpy as np
 from spectraltrep.layerConsolidation import SpectraReader
 
-# Creamos el objeto reader 
+# We create the reader object
 docReader = SpectraReader('../data/data_dummy_spectre_lexic.jsonl')
-# Creamos el generador.
+# We create the generator.
 spectre_gen = docReader.readSpectra()
 
-#Invocamos 10 veces el generador read_spectre.
+# We call the read_spectre generator 10 times.
 for _ in np.arange(102):
     print(next(spectre_gen, '<EOS>'))
     print("\n")

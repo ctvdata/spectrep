@@ -20,4 +20,4 @@ with open('som.p', 'wb') as outfile:
 # weights = model.get_weights()
 # np.save("outputs/pesos.npy",weights)
 
-print("Red entrenada en %.02f segundos" % (time.time()-init))
+print("Network trained in %.02f seconds" % (time.time()-init))

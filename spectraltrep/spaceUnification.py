@@ -41,20 +41,6 @@ class VectorReader(Reader):
             for _ in f:
                 self.__numLines +=1
 
-    # def readFeatureVector(self):
-    #     """
-    #     Generador que carga vectores de características en memoria.
-    #     Esta función no está en uso para esta versión de la api.
-
-    #     Yields:
-    #         Vector de características.
-    #     """
-
-    #     with open(self.__inputPath) as f:
-    #             for line in f:
-    #                 vector = json.loads(line)
-    #                 yield vector
-
     def readFeatureVectors(self):
         """
         Loads feature vectors in memory.

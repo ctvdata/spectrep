@@ -7,20 +7,20 @@ import time
 if __name__ == '__main__':
     init = time.time()
 
-    print('Inicializando objetos del pipeline')
+    print('Initializing ppeline objects')
     cr = CorpusReader('../data/pan_uniquedocs_short.jsonl', 100)
     vw = DocumentSink('./outputs/LexicVectors.jsonl', False)
     vf = VectorizerFactory()
     lv = vf.createLexicVectorizer(vw, cr)
     
-    print('Entrenando modelo')
+    print('Training model')
     lv.fit()
     
-    print('Realizando vectorizacion')
+    print('Performing vectorization')
     lv.transform()
 
-    print('Guardando resultados')
+    print('Save results')
     lv.saveModel('outputs/lexicModel.json')
     vw.saveCorpus()
 
-    print('Proceso finalizado en %.02f segundos' % (time.time()-init))
+    print('Process finished in %.02f seconds' % (time.time()-init))

@@ -5,12 +5,12 @@ from nltk.tokenize import word_tokenize
 import pdb
 
 """
-Prueba de entrenamiento de Doc2Vec usando un metodo de stream de documentos
-para no cargar el corpus completo en memoria.
+Doc2Vec training test using a document stream method so 
+as not to load the complete corpus in memory.
 """
 class MyCorpus:
     """
-    Clase generator para pasar documentos a doc2vec gensim
+    Generator class to pass documents to doc2vec gensim
     """
     def __init__(self, inputPath):
             self.__inputPath = inputPath
@@ -25,21 +25,14 @@ class MyCorpus:
                 yield TaggedDocument(tokens, [int(line['id'])])
 
 if __name__ == '__main__':
-    # Creamos el generador de documentos
+    # We create the document generator
     corpus = MyCorpus('../data\pan_uniquedocs_short.jsonl')
     
 
-    # Creamos y entrenamos el modelo doc2vec
+    # We create and train the doc2vec model
     model = Doc2Vec(vector_size=5, min_count=2, epochs=1)
     print('Building vocabulary')
     model.build_vocab(corpus)
     print('Training model')
     model.train(corpus, total_examples=model.corpus_count, epochs=model.epochs)
-    # doc = 0
-    # print(f'Vector of document {doc}')
-    # print(model.dv[doc])
     pdb.set_trace()
-
-    # newdoc = 'hola mi nombre es mel'
-    # print("Vector inferido de: " + newdoc)
-    # print(model.infer_vector(newdoc.split()))

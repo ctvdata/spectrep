@@ -20,11 +20,10 @@ class MyCorpus:
                 yield TaggedDocument(tokens, [int(line['id'])])
 
 if __name__ == '__main__':
-    # Creamos el generador de documentos
+    # We create the document generator
     corpus = MyCorpus('../data\pan_uniquedocs_short.jsonl')
     i = 0
     for item in corpus:
-        # print(item[1][0])
         if i > 3:
             break
         print(item)

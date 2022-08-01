@@ -1,22 +1,22 @@
 import numpy as np
 import json
 
-# Método auxiliar para crear un spectra.
+# Helper method to create a spectrum.
 def create_spectre(size, tp, matrix_size):
     list = []
 
     for i in range(size):
-        print("Generando archivo número: " + str(i) + "...")
+        print("File Generation number: " + str(i) + "...")
         dict = {}
-        # Agregamos las llaves correspondientes con su id y el texto.
+        # We add the corresponding keys with their id and the text.
         dict['id'] = i
 
-        # Creamos la matriz bidimensional aleatoria.
+        # We create the random two -dimensional matrix.
         dict['spectre'] = np.random.rand(matrix_size,matrix_size).tolist()
 
         list.append(dict)
 
-    # Creamos el archivo de tipo jsonl.
+    # We create the JSONL type file.
     with open("./data/data_dummy_spectre_{}.jsonl".format(tp), 'w') as f:
         for item in list:
             f.write(json.dumps(item) + "\n")

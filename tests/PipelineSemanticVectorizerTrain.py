@@ -7,20 +7,20 @@ import time
 if __name__ == '__main__':
     init = time.time()
 
-    print('Inicializando objetos del pipeline')
+    print('Initializing ppeline objects')
     cr = Doc2VecCorpusReader('../data/pan_uniquedocs_short.jsonl')
     vw = DocumentSink('./outputs/SemanticVectorsTrain.jsonl', False)
     vf = VectorizerFactory()
     sv = vf.createSemanticVectorizer(vw, cr, 3)
     
-    print('Entrenando modelo')
+    print('Training model')
     sv.fit()
     
-    print('Realizando vectorizacion')
+    print('Performing vectorization')
     sv.transform()
 
-    print('Guardando resultados')
+    print('Save results')
     sv.saveModel('./outputs/dv2Model')
     vw.saveCorpus()
 
-    print('Proceso finalizado en %.02f segundos' % (time.time()-init))
+    print('Process finished in %.02f seconds' % (time.time()-init))

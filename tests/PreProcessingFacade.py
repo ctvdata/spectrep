@@ -4,17 +4,17 @@ from spectraltrep.preProcessing import PreProcessingFacade
 import time
 
 def main():
-    inputPath = '../data/data_sample.jsonl' # Archivo de entrada
-    outputPath = './outputs/SalidaPipelinePreProcesamiento.jsonl' # Archivo de salida
-    preProcessingType = ['lex','syn','sem'] # Tipo de preprocesamiento aplicable ['lex', 'syn', 'sem']
-    numThreads = 1 # Numero de hilos de preprocesamiento
-    batchSize = 10 # Numero de documentos que entrega CorpusReader por batch
+    inputPath = '../data/data_sample.jsonl' # input file
+    outputPath = './outputs/SalidaPipelinePreProcesamiento.jsonl' # output file
+    preProcessingType = ['lex','syn','sem'] # Applicable preprocessing type ['lex', 'syn', 'sem']
+    numThreads = 1 # Number of preprocessing threads
+    batchSize = 10 # Number of documents delivered by Corpus Reader per batch
     sortedOutput = True
 
     init = time.time()
     ppf = PreProcessingFacade()
     ppf.preProcess(inputPath, outputPath, preProcessingType, numThreads, batchSize, sortedOutput)
-    print('%d hilos, %.02f segundos' % (numThreads,time.time() - init))
+    print('%d Threads, %.02f seconds' % (numThreads,time.time() - init))
 
 if __name__ == '__main__':
     main()
