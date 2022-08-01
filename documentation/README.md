@@ -56,27 +56,51 @@ The utils file only contains two classes ```CorpusReader``` and ```DocumentSink`
 
 <a id="extraction"></a>
 ## Feature Extraction Stage <small>[[Top](#index)]</small>
+After this stage, we obtain three feature vectors for the same text (lex, syn, sem) corresponding to each text component. For this, the extraction of each of these types of vectors is as follows:
+
+- Lexical layer: Each entry in the vector corresponds to the amount of information (using Shannon's formula) provided by each word of the vocabulary, including punctuation marks and stop words if desired.
+
+- Syntactic layer:  POS tagging process was applied in the pre-processing stage to obtain a POS tag sequence from the original text. In this way, using the ```Doc2Vec``` algorithm is expected to capture syntactic information about the content  to obtain the vector.
+
+- Semantic layer: We want to obtain feature vectors that capture semantic information. Given this, we resort to the ```Doc2Vec``` algorithm once again to extract the corresponding feature vectors.
+
 <p align="center">
   <img src="figs/extraction.png" alt="extraction"/>
 </p>
+
+To achieve this, we will once again use the ```CorpusReader``` and ```DocumentSink ``` classes from the ```utils.py``` file to read the text that resulted from the pre-processing stage and save the vectors once this stage is finished.
+
+The class that interacts with the user is the ```VectorizerFactory()```, which is in charge of creating the Vectorizers for each layer and does what corresponds to its layer (mentioned above).
+
 <p align="center">
   <img src="figs/extractionClass.png" alt="extractionClass"/>
 </p>
 
 <a id="unifiedSpace"></a>
 ## Unified Space Mapping Stage <small>[[Top](#index)]</small>
+The sets of extracted feature vectors lex,  syn, and sem, can have a different number of dimensions. At this stage, we make use of the ```Self-Organizing Maps (SOM)``` to transfer vectors with a different number of dimensions to a space with the same dimensions where their similarity is preserved.
+
 <p align="center">
   <img src="figs/unifiedSpace.png" alt="unifiedSpace"/>
 </p>
+
+The class in charge is called ```Projector``` and this in turn implements the following code [SOM](https://github.com/JustGlowing/minisom).
+
 <p align="center">
   <img src="figs/unifiedSpaceClass.png" alt="unifiedSpaceClass"/>
 </p>
 
 <a id="consolidation"></a>
 ## Layer Consolidation <small>[[Top](#index)]</small>
+This final stage of the text transformation consists only of taking the three spectra of each text to consolidate them into a single three-layer text representation containing lexical, syntactical, and semantic features about the content.
+
 <p align="center">
   <img src="figs/consolidation.png" alt="consolidation"/>
 </p>
+
+This stage consists of only two classes, the first ```SpectraAssembler```, does the work mentioned in the previous paragraph, which needs the route of the 3 vectors as well as the final route.
+The second is ```SpectraReader``` class, as its name indicates, returns the full spectrum as ```JSON```.
+
 <p align="center">
   <img src="figs/consolidationClass.png" alt="consolidationClass"/>
 </p>
