@@ -12,7 +12,7 @@ def preProcessStage():
 
     print("Pre-processing stage")
 
-    inputPath = '../data/data_sample.jsonl' # input file
+    inputPath = 'data_sample.jsonl' # input file
     outputPath = 'outputs/Preprocessed.jsonl' # output file
     preProcessingType = ['lex','syn','sem'] # Applicable preprocessing type ['lex', 'syn', 'sem']
     numThreads = 1 # Number of preprocessing threads
