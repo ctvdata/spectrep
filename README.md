@@ -189,7 +189,7 @@ def layerConsolidation():
     print("Ensemble finished")
 ```
 
-[Here](Spectrep.py) the complete example of how to use the API, 
+[Here](usage/Spectrep.py) the complete example of how to use the API, 
 to run the example:
 ```
 cd usage/
