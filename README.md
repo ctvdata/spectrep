@@ -106,7 +106,7 @@ preProcessStage()
 ```
 
 **Extract vectors (features):**
-- [Lexical](tests/PipelineLexicVectorizerTrain.py):
+- Lexical:
     ```
     def featureExtractionStage() -> int:
         cr = CorpusReader('outputs/Preprocessed_lex.jsonl', 500)
@@ -123,7 +123,7 @@ preProcessStage()
 
         del(cr, vw, vf, lv)
     ```
-- [Semantic - Syntactic](tests/PipelineSemanticVectorizerTrain.py) :
+- Semantic - Syntactic:
     The process is the same for semantic and syntactic vectors, only the name changes depending on which vector you want, this is indicated in the code as
 
     ```<Semantic | Syntactic>``` or ```<sem | syn>```
@@ -142,7 +142,7 @@ preProcessStage()
     ```
 
 **Unified space mapping:**
-- [Lexical](tests/PipelineUnifiedSpace.py):
+- Lexical:
     ```
     def spaceMappingStage(lexicVectorLenght: int):
 
@@ -157,7 +157,7 @@ preProcessStage()
 
         del(vr, proj, sink, data, lexicVectorLenght)  
     ```
--  [Semantic - Syntactic](tests/PipelineUnifiedSpace.py):
+-  Semantic - Syntactic:
     ```
         vr = VectorReader('outputs/<Semantic | Syntactic>Vectors.jsonl')
         proj = Projector(20,300,learningRate=0.5)
