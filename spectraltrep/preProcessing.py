@@ -57,14 +57,14 @@ class LexicPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
        
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        self.__DELETE_NEW_LINE = re.compile('\\n') # Line break replacement
+        self.__DELETE_MIDSCORE = re.compile('-') # Mid dash removal
+        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Removing parentheses
+        self.__DELETE_BRACKETS = re.compile('\[|\]') # Removing brackets
+        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Replacing double spaces
+        self.__DELETE_QM = re.compile('"|’|\'') # Remove quotes
+        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Elimination of punctuation marks
+        self.__REPLACE_DIGITS = re.compile('\d') # Digit Replacement
         self.__stop_words = set(stopwords.words('english'))
         self.__wordnet_lemmatizer = WordNetLemmatizer()
     
@@ -141,14 +141,14 @@ class SyntacticPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
 
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        self.__DELETE_NEW_LINE = re.compile('\\n') # Line break replacement
+        self.__DELETE_MIDSCORE = re.compile('-') # Mid-hyphen removal
+        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Removing parentheses
+        self.__DELETE_BRACKETS = re.compile('\[|\]') # Removing brackets
+        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Replacing double spaces
+        self.__DELETE_QM = re.compile('"|’|\'') # Remove quotes
+        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Elimination of punctuation marks
+        self.__REPLACE_DIGITS = re.compile('\d') # Digit Replacement
     
     def preProcess(self, text):
         """
@@ -217,14 +217,14 @@ class SemanticPreprocessor(Preprocessor, Thread):
         except Exception as err:
             print(err)
             
-        self.__DELETE_NEW_LINE = re.compile('\\n') # Reemplazo de saltos de linea
-        self.__DELETE_MIDSCORE = re.compile('-') # Eliminacion de guion medio
-        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Eliminación de paréntesis
-        self.__DELETE_BRACKETS = re.compile('\[|\]') # Eliminacion de corchetes
-        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Remplazo de espacios dobles
-        self.__DELETE_QM = re.compile('"|’|\'') # Eliminar comillas
-        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Eliminacion de signos de puntuacion
-        self.__REPLACE_DIGITS = re.compile('\d') # Reemplazo de digitos
+        self.__DELETE_NEW_LINE = re.compile('\\n') # Line break replacement
+        self.__DELETE_MIDSCORE = re.compile('-') # Mid-hyphen removal
+        self.__DELETE_PARENTHESES = re.compile('\(|\)') # Removing parentheses
+        self.__DELETE_BRACKETS = re.compile('\[|\]') # Removing brackets
+        self.__REPLACE_DOUBLE_SPACE = re.compile('\s+') # Replacing double spaces
+        self.__DELETE_QM = re.compile('"|’|\'') # Remove quotes
+        self.__DELETE_PUNCTUATION = re.compile('[^\w\s]') # Elimination of punctuation marks
+        self.__REPLACE_DIGITS = re.compile('\d') # Digit Replacement
         self.__stop_words = set(stopwords.words('english'))
     
     def preProcess(self, text):
@@ -391,7 +391,7 @@ class PreProcessingFacade():
                 fileName = '{}_{}{}'.format(p.stem, tp, p.suffix)
                 ds = DocumentSink(Path(p.parent, fileName), sortedOutput)
 
-                # Inicializamos hilos de preprocesamiento
+                # e initialize preprocessing threads
                 PreprocessingThreads = []
                 for _ in range(numThreads):
                     if tp=="lex":
@@ -406,11 +406,11 @@ class PreProcessingFacade():
                     pp.start()
                     PreprocessingThreads.append(pp)
 
-                # Esperamos a que terminen los hilos de preprocesamiento
+                # Wait for the preprocessing threads to finish
                 for t in PreprocessingThreads:
                     t.join()
 
-                # Guardamos el corpus preprocesado en caso de que sea un corpus ordenado
+                # We save the preprocessed corpus in case it is an ordered corpus
                 if sortedOutput:
                     ds.saveCorpus()
 

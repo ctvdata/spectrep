@@ -114,15 +114,15 @@ class LexicVectorizer(Vectorizer):
             print(err)
 
     def __getVector(self, text):
-        # Creamos el vector de ceros
+        # We create the vector of zeros
         vector = np.zeros(self.__model.vocabularyLength)
 
-        #Inicializamos diccionario de frecuencias de palabras en el documento
+        # We initialize dictionary of word frequencies in the document
         docTokensFreq = dict()
         tokens = word_tokenize(text)
         docTotalTokens = len(tokens)
 
-        # Realizamos el conteo de frecuencias
+        # We perform the frequency count
         for token in tokens:
             if token not in docTokensFreq.keys():
                 docTokensFreq[token] = 1

@@ -9,5 +9,3 @@ spectraltrep
    preProcessing
    spaceUnification
    utils
-   layerConsolidation
-   featureExtraction
