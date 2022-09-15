@@ -3,6 +3,6 @@ nltk==3.7
 Sphinx==4.4.0
 sphinxcontrib-napoleon==0.7
 gensim==4.1.2
-numpy==1.21.4
+numpy==1.19.2
 scikit-learn==1.0.2
 tensorflow==2.6.0
