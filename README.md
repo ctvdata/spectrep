@@ -200,7 +200,7 @@ python3 Spectrep.py
 <a id="documentation"></a> 
 ## Documentation <small>[[Top](#index)]</small>
 
-See [here](https://simpsom.readthedocs.io/en/latest/) the full API documentation
+See [here](https://spectrep.readthedocs.io/en/latest/) the full API documentation
 
 <a id="citation"></a> 
 ## Citation <small>[[Top](#index)]</small>
